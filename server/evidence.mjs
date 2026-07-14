@@ -1,5 +1,3 @@
-const USER_AGENT = "FactRelay/0.1 (+https://github.com/narratorzhang0307/FactRelay)";
-
 export function decodeEntities(value) {
   return String(value ?? "")
     .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, "$1")
@@ -44,7 +42,8 @@ export async function searchNewsEvidence(query, { limit = 6, signal } = {}) {
     : "hl=en-US&gl=US&ceid=US:en";
   const url = `https://news.google.com/rss/search?q=${encodeURIComponent(cleanQuery)}&${params}`;
   const response = await fetch(url, {
-    headers: { "User-Agent": USER_AGENT, Accept: "application/rss+xml, application/xml, text/xml" },
+    // Cloudflare Workers reject attempts to set the restricted User-Agent header.
+    headers: { Accept: "application/rss+xml, application/xml, text/xml" },
     signal,
   });
   if (!response.ok) throw new Error(`Evidence search returned ${response.status}.`);
@@ -124,7 +123,7 @@ export async function fetchUrlEvidence(rawUrl, { signal, resolveHost } = {}) {
   for (let redirects = 0; redirects <= 3; redirects += 1) {
     response = await fetch(current, {
       redirect: "manual",
-      headers: { "User-Agent": USER_AGENT, Accept: "text/html,application/xhtml+xml" },
+      headers: { Accept: "text/html,application/xhtml+xml" },
       signal,
     });
     if (![301, 302, 303, 307, 308].includes(response.status)) break;
