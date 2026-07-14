@@ -77,6 +77,47 @@ function uniqueStrings(values) {
   return [...new Set(values.map((value) => value.trim()).filter(Boolean))].slice(0, 8);
 }
 
+export async function callGonkaJson(options, { request = callGonka, trace = [] } = {}) {
+  const first = await request(options);
+  try {
+    const parsed = parseJsonObject(first.text);
+    trace.push(first.trace);
+    return { call: first, parsed };
+  } catch (firstError) {
+    trace.push({ ...first.trace, status: "partial" });
+
+    const retry = await request({
+      ...options,
+      purpose: `${options.purpose}-json-retry`,
+      temperature: 0,
+      messages: [
+        ...options.messages,
+        {
+          role: "assistant",
+          content: `UNTRUSTED PREVIOUS OUTPUT:\n${String(first.text).slice(0, 12_000)}`,
+        },
+        {
+          role: "user",
+          content: "The previous output was not one valid JSON object. Return the requested object again as strict JSON only: no markdown, preamble, commentary, or trailing text.",
+        },
+      ],
+    });
+
+    try {
+      const parsed = parseJsonObject(retry.text);
+      trace.push(retry.trace);
+      return { call: retry, parsed };
+    } catch (retryError) {
+      trace.push({ ...retry.trace, status: "partial" });
+      throw new GonkaError("Gonka model did not return valid JSON after one structured retry.", {
+        status: 422,
+        code: "GONKA_INVALID_JSON",
+        details: retryError instanceof Error ? retryError.message : String(retryError),
+      });
+    }
+  }
+}
+
 export async function verifyClaim(
   rawInput,
   env = typeof process === "undefined" ? {} : process.env,
@@ -92,7 +133,7 @@ export async function verifyClaim(
   }
 
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 120_000);
+  const timeout = setTimeout(() => controller.abort(), 180_000);
   const trace = [];
   let submittedSource = null;
   let claim = input.content;
@@ -103,27 +144,25 @@ export async function verifyClaim(
         signal: controller.signal,
         resolveHost: runtime.resolveHost,
       });
-      const extraction = await callGonka({
+      const extractionResult = await callGonkaJson({
         ...config,
         model: config.kimiModel,
         messages: articleClaimMessages(submittedSource),
         purpose: "claim-extraction",
         maxTokens: 900,
         signal: controller.signal,
-      });
-      trace.push(extraction.trace);
-      claim = extractedClaim(extraction.text);
+      }, { request: runtime.callGonka || callGonka, trace });
+      claim = extractedClaim(JSON.stringify(extractionResult.parsed));
     } else if (input.kind === "image") {
-      const extraction = await callGonka({
+      const extractionResult = await callGonkaJson({
         ...config,
         model: config.kimiModel,
         messages: imageClaimMessages(input.imageDataUrl, input.content),
         purpose: "vision-claim-extraction",
         maxTokens: 900,
         signal: controller.signal,
-      });
-      trace.push(extraction.trace);
-      claim = extractedClaim(extraction.text);
+      }, { request: runtime.callGonka || callGonka, trace });
+      claim = extractedClaim(JSON.stringify(extractionResult.parsed));
     }
 
     const retrievalStarted = performance.now();
@@ -160,25 +199,25 @@ export async function verifyClaim(
       status: retrievalStatus,
     });
 
-    const investigatorCall = await callGonka({
+    const investigatorResult = await callGonkaJson({
       ...config,
       model: config.kimiModel,
       messages: investigatorMessages(claim, sources),
       purpose: "investigator-analysis",
       signal: controller.signal,
-    });
-    trace.push(investigatorCall.trace);
-    const investigator = normalizeModelVerdict(parseJsonObject(investigatorCall.text), sources.length);
+    }, { request: runtime.callGonka || callGonka, trace });
+    const investigatorCall = investigatorResult.call;
+    const investigator = normalizeModelVerdict(investigatorResult.parsed, sources.length);
 
-    const skepticCall = await callGonka({
+    const skepticResult = await callGonkaJson({
       ...config,
       model: config.minimaxModel,
       messages: skepticMessages(claim, sources, investigator),
       purpose: "skeptic-cross-check",
       signal: controller.signal,
-    });
-    trace.push(skepticCall.trace);
-    const skeptic = normalizeModelVerdict(parseJsonObject(skepticCall.text), sources.length);
+    }, { request: runtime.callGonka || callGonka, trace });
+    const skepticCall = skepticResult.call;
+    const skeptic = normalizeModelVerdict(skepticResult.parsed, sources.length);
 
     const scored = calculateTruthScore([investigator, skeptic], sources.length);
     const assessedSources = sources.map((source, index) => ({
@@ -222,7 +261,7 @@ export async function verifyClaim(
     };
   } catch (error) {
     if (error?.name === "AbortError") {
-      throw new GonkaError("Verification timed out after 120 seconds.", { status: 504, code: "VERIFICATION_TIMEOUT" });
+      throw new GonkaError("Verification timed out after 180 seconds.", { status: 504, code: "VERIFICATION_TIMEOUT" });
     }
     if (error instanceof GonkaError) throw error;
     throw new GonkaError("Verification could not be completed.", {

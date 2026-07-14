@@ -49,7 +49,9 @@ const STAGE_LABEL: Record<string, string> = {
   "vision-claim-extraction": "Read claim from image",
   "evidence-retrieval": "Retrieve live evidence",
   "investigator-analysis": "Kimi investigation",
+  "investigator-analysis-json-retry": "Kimi structured retry",
   "skeptic-cross-check": "MiniMax cross-check",
+  "skeptic-cross-check-json-retry": "MiniMax structured retry",
 };
 
 const STAGE_ZH: Record<string, string> = {
@@ -57,7 +59,9 @@ const STAGE_ZH: Record<string, string> = {
   "vision-claim-extraction": "读取图片主张",
   "evidence-retrieval": "检索实时证据",
   "investigator-analysis": "Kimi 调查",
+  "investigator-analysis-json-retry": "Kimi 结构化重试",
   "skeptic-cross-check": "MiniMax 交叉质疑",
+  "skeptic-cross-check-json-retry": "MiniMax 结构化重试",
 };
 
 const ROLE_ZH: Record<string, string> = {
