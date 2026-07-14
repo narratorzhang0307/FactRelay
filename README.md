@@ -6,7 +6,20 @@ FactRelay checks public claims without asking users to trust one opaque model. I
 
 > AI³ Growth Hackathon 2026 · Track 3: Gonka — AI for Society
 
-[English details](#why-it-exists) · [架构边界](docs/ARCHITECTURE.md) · [提交与视频计划](docs/SUBMISSION.md)
+[Public demo / 在线演示](https://factrelay-ai3-2026.yediqizhang37.chatgpt.site) · [2:30 bilingual demo / 双语演示视频](https://github.com/narratorzhang0307/FactRelay/releases/tag/ai3-2026-submission) · [English details](#why-it-exists) · [架构边界](docs/ARCHITECTURE.md) · [提交材料](docs/SUBMISSION.md)
+
+## Live proof / 实时运行证明
+
+The production deployment is connected to GonkaRouter. A final public smoke run on **2026-07-15** returned a live `refuted` verdict for the Great Wall/Moon claim with a deterministic Truth Score of **18**, **88%** decision confidence, **5** retrievable sources, and non-null upstream request IDs from both models.
+
+公开部署已连接 GonkaRouter。**2026-07-15** 的最终公开烟雾测试对“从月球肉眼看到长城”给出实时 `事实不符` 结论：确定性 Truth Score 为 **18**、结论信心 **88%**、可追溯来源 **5** 个，两个模型均返回非空上游 Request ID。
+
+| Deliverable / 交付项 | Public link / 公开链接 |
+| --- | --- |
+| Running product / 在线产品 | <https://factrelay-ai3-2026.yediqizhang37.chatgpt.site> |
+| Public repository / 公开仓库 | <https://github.com/narratorzhang0307/FactRelay> |
+| Demo video release / 演示视频 | <https://github.com/narratorzhang0307/FactRelay/releases/tag/ai3-2026-submission> |
+| Direct 2:30 MP4 / 2分30秒视频直链 | <https://github.com/narratorzhang0307/FactRelay/releases/download/ai3-2026-submission/FactRelay_Demo_2m30s_Bilingual.mp4> |
 
 ## 中文说明
 
@@ -33,7 +46,7 @@ FactRelay 把这三个问题直接做成界面。
 ### 核心能力
 
 - **文本、链接与图片输入：** Kimi-K2.6 可从文章或截图中提取可核查主张。
-- **实时公开证据：** 非 AI 检索层读取提交页面与 Google News RSS。
+- **实时公开证据：** 非 AI 检索层读取提交页面与 Google/Bing News RSS；内置演示主张另使用透明列出的 NASA、ESA 和 Smithsonian 权威种子链接，并在运行时实时抓取。
 - **双模型对抗审查：** Kimi 调查，MiniMax 质疑，分歧不会被隐藏。
 - **确定性评分：** Truth Score 由模型结论、证据立场、来源覆盖与分歧程度共同计算，不由模型随口生成。
 - **真实推理回执：** 界面原样展示 GonkaRouter 响应中的 `id`。
@@ -80,7 +93,7 @@ FactRelay turns those questions into the interface.
 ## What the demo shows
 
 - **Text, URL, and image input.** Kimi-K2.6 can extract a claim from an article or screenshot.
-- **Current public evidence.** A non-AI retrieval layer gathers Google News RSS results and the submitted page.
+- **Current public evidence.** A non-AI retrieval layer gathers the submitted page plus Google News RSS with a concurrent Bing News RSS fallback. The built-in Great Wall starter additionally fetches a transparent allowlist of live NASA, ESA, and Smithsonian pages.
 - **Adversarial model roles.** Kimi investigates; MiniMax challenges source laundering, missing context, and causal leaps.
 - **Deterministic Truth Score.** The final score is calculated by code from model verdicts, source stance, coverage, and disagreement.
 - **Real Gonka receipts.** The UI displays the unmodified `id` returned by GonkaRouter for each model call.
@@ -170,7 +183,7 @@ npm run verify
 npm audit --audit-level=low
 ```
 
-`npm run verify` runs strict TypeScript checking, unit tests, and the production build.
+`npm run verify` runs strict TypeScript checking, **19 unit tests across 5 files**, and the production build. `npm audit --audit-level=low` currently reports zero known vulnerabilities.
 
 ## API
 

@@ -14,8 +14,9 @@ This file contains public copy that can be pasted into the submission form. Priv
 | Project name / 项目名称 | **FactRelay** |
 | Track / 赛道 | **Track 3 · Gonka — AI for Society** |
 | Repository / 代码仓库 | <https://github.com/narratorzhang0307/FactRelay> |
-| Running demo / 在线演示 | **TBD — add deployed URL before submission / 提交前补充** |
-| Demo video / 演示视频 | **TBD — add public 2–3 minute video URL / 提交前补充** |
+| Running demo / 在线演示 | <https://factrelay-ai3-2026.yediqizhang37.chatgpt.site> |
+| Demo video / 演示视频 | <https://github.com/narratorzhang0307/FactRelay/releases/tag/ai3-2026-submission> |
+| Direct MP4 / 视频直链 | <https://github.com/narratorzhang0307/FactRelay/releases/download/ai3-2026-submission/FactRelay_Demo_2m30s_Bilingual.mp4> |
 | Team members / 团队成员 | **PRIVATE — user supplies in the form / 由参赛者填写** |
 | Phone / 手机 | **PRIVATE — user supplies in the form / 由参赛者填写** |
 | Email / 邮箱 | **PRIVATE — user supplies in the form / 由参赛者填写** |
@@ -56,7 +57,7 @@ FactRelay never claims that a request receipt proves a statement true. A receipt
 ```text
 React client
   → Node input validation and SSRF guard
-  → public page + Google News RSS retrieval (non-AI)
+  → public page + Google/Bing News RSS retrieval (non-AI)
   → Kimi investigator through GonkaRouter
   → MiniMax skeptic through GonkaRouter
   → JSON normalization and source-index validation
@@ -72,6 +73,8 @@ React client
 - The backend preserves the exact upstream `response.id` as `requestId`.
 - Preview fixtures always use `requestId: null`; the project never fabricates realistic IDs.
 - Retrieval uses public HTML and RSS, not another AI provider.
+- The built-in Great Wall starter transparently adds live NASA, ESA, and Smithsonian pages to make the canonical demo resilient to news-search outages; generic claims still use the general live retrieval path.
+- If a model returns malformed JSON, the same Gonka model receives one strict structured retry. The failed attempt remains visible as a partial trace step instead of being hidden.
 
 ### Truth Score / 评分公式
 
@@ -101,7 +104,7 @@ Format: Chinese narration with concise English subtitles. Record at 1920×1080, 
 | 00:00–00:12 | FactRelay hero and title | “AI 事实核查不应该要求你相信另一个黑盒。FactRelay 保留证据、分歧和每一张推理回执。” | AI fact checking should not replace one black box with another. FactRelay keeps the evidence, disagreement, and receipts. |
 | 00:12–00:28 | Text / URL / image tabs | “用户可以提交原始文本、公开文章链接或社交媒体截图。” | Submit text, a public URL, or a screenshot. |
 | 00:28–00:43 | Run the Great Wall example | “这里我们核查‘肉眼可从月球看到长城’这条常见说法。” | We check the familiar claim that the Great Wall is visible from the Moon. |
-| 00:43–01:03 | Truth Score and verdict seal | “FactRelay 给出 9 分和‘事实不符’，但这个数字不是让模型随口生成的。” | The score is deterministic, not a number invented by a model. |
+| 00:43–01:03 | Truth Score and verdict seal | “本次实时运行给出 18 分和‘事实不符’，但这个数字不是让模型随口生成的。” | The score is deterministic, not a number invented by a model. |
 | 01:03–01:25 | Evidence ledger | “每条来源都保留发布者、时间、链接、立场和可信度。模型只能引用这份编号清单。” | Every source keeps its publisher, date, URL, stance, and reliability. Models may cite only this numbered ledger. |
 | 01:25–01:49 | Kimi and MiniMax cards | “Kimi 担任调查方，MiniMax 担任质疑方。它们不是重复回答同一个问题，而是承担不同责任。” | Kimi investigates. MiniMax challenges. Their responsibilities are deliberately different. |
 | 01:49–02:09 | Request ID and provenance trace | “每次 Gonka 推理都展示上游 Request ID。预览模式不伪造回执；实时运行则可以按执行顺序追溯。” | Every Gonka inference exposes its upstream request ID. Preview mode never fabricates receipts. |
@@ -126,12 +129,11 @@ Format: Chinese narration with concise English subtitles. Record at 1920×1080, 
 - [x] Source includes tests for evidence parsing, JSON normalization, and deterministic scoring.
 - [x] UI supports text, URL, and image input.
 - [x] Preview is clearly labeled and contains no fabricated request IDs.
-- [ ] Gonka API key configured on the deployment environment.
-- [ ] At least one live run verified with real Request IDs.
-- [ ] Public deployed demo URL added above.
-- [ ] Public/unlisted 2–3 minute video URL added above.
+- [x] Gonka API key configured on the deployment environment.
+- [x] Multiple live runs verified with real Request IDs.
+- [x] Public deployed demo URL added above.
+- [x] Public 2:30 demo video with Chinese narration and burned-in English subtitles added above.
 - [ ] Team members, phone, and email entered directly into the private form.
 - [ ] Authorization consent reviewed and confirmed by the participant.
-- [ ] All links tested from a signed-out/private browser session.
+- [x] Public demo, release page, and direct MP4 tested without GitHub authentication.
 - [ ] Submit before the organizer's deadline; the published date is **2026-07-16**, but an exact cutoff time is not stated in the brief, so do not wait until the end of the day.
-

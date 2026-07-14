@@ -22,7 +22,7 @@ flowchart TB
     subgraph Server[FactRelay Node server]
         Guard[Input validation + SSRF guard]
         Extract[Claim extraction orchestrator]
-        Retrieve[Public HTML + Google News RSS]
+        Retrieve[Public HTML + Google/Bing News RSS]
         Kimi[Kimi investigator]
         MiniMax[MiniMax skeptic]
         Normalize[JSON parser + source-index validator]
@@ -176,7 +176,8 @@ Each trace step records:
 FactRelay's evidence layer uses deterministic network retrieval:
 
 - The submitted public page is fetched directly.
-- Related coverage is obtained from Google News RSS.
+- Related coverage is requested concurrently from Google News RSS and Bing News RSS; the first successful usable result wins.
+- The built-in Great Wall/Moon starter transparently adds a small allowlist of live NASA, ESA, and Smithsonian pages. Those pages are fetched at runtime and remain ordinary inspectable evidence, not bundled model answers.
 - The result packet contains title, publisher, timestamp, URL, and excerpt.
 
 This layer does not call Gemini, OpenAI, local models, or any other inference provider. All semantic analysis is routed through Gonka.
@@ -212,8 +213,9 @@ This layer does not call Gemini, OpenAI, local models, or any other inference pr
 | No Gonka key | `GONKA_API_KEY_MISSING`; preview remains available |
 | Retrieval unavailable | Continue with partial evidence; score is pulled toward uncertainty |
 | Invalid model JSON | Stop with a structured verification failure, never invent a verdict |
+| One malformed model response | Retry the same Gonka model once with a strict JSON-only instruction; preserve the failed call as a `partial` trace step |
 | Provider rate limit | Return `GONKA_RATE_LIMITED` |
-| 120-second timeout | Return `VERIFICATION_TIMEOUT` |
+| 180-second timeout | Return `VERIFICATION_TIMEOUT` |
 | Too few sources | Label `insufficient` and cap confidence |
 
 ## Deliberate non-features
