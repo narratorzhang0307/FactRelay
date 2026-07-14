@@ -100,7 +100,11 @@ def architecture_frame(path: Path) -> None:
             draw.polygon([(cards[index + 1][0][0] - 25, 458), (cards[index + 1][0][0] - 25, 482), (cards[index + 1][0][0] - 5, 470)], fill=LIME)
 
     draw.rounded_rectangle((70, 720, 1850, 932), radius=30, fill="#161713", outline="#42433e", width=3)
-    draw.text((110, 760), "PROVENANCE INVARIANTS · 可追溯约束", font=font(FONT_BOLD, 26), fill=VIOLET)
+    invariant_label = "PROVENANCE INVARIANTS"
+    invariant_font = font(FONT_BOLD, 26)
+    draw.text((110, 760), invariant_label, font=invariant_font, fill=VIOLET)
+    label_width = draw.textbbox((0, 0), invariant_label, font=invariant_font)[2]
+    draw.text((128 + label_width, 758), "· 可追溯约束", font=font(FONT_CN, 24), fill=VIOLET)
     invariants = [
         "1  Every semantic inference uses GonkaRouter · 所有语义推理仅通过 GonkaRouter",
         "2  Truth Score is computed by tested code · Truth Score 由可测试代码计算",
