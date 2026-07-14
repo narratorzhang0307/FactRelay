@@ -1,6 +1,9 @@
 import { defineConfig } from "vite";
 
 export default defineConfig({
+  // Static assets belong in dist/ and are served through the ASSETS binding.
+  // Copying public/ into dist/server makes Sites interpret images as modules.
+  publicDir: false,
   build: {
     ssr: "worker/index.mjs",
     outDir: "dist/server",
