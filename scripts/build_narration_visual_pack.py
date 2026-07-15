@@ -64,16 +64,16 @@ OLD_SHOTS = ROOT / "FactRelay_黑客松交付包" / "03_截图"
 FRAME_PLAN = [
     (0, "知识黑盒问题", "concept", "product", "概念开场", "个人知识库最危险的，不是缺少信息。"),
     (0, "未核验主张变成事实", "mobile", "M01_Relay手机_产品开场.png", "手机端产品展示", "真正的风险，是把未经验证的说法当成事实。"),
-    (1, "两条知识路径", "concept", "paths", "产品结构概念", "Fact Atlas 连接主动探索与每日发现。"),
-    (1, "Relay_Atlas_Signals三Tab", "desktop", "D01_Relay桌面_产品开场.png", "桌面端三标签展示", "两条路径，被组织在 Relay、Atlas 和 Signals 三个标签中。"),
+    (1, "网页与手机双端适配", "concept", "responsive", "双端响应式适配", "Fact Atlas 同时适配网页端和手机端。"),
+    (1, "Relay_Atlas_Signals三Tab", "concept", "paths", "两条知识路径", "三个标签连接主动探索与每日发现。"),
     (2, "Relay桌面工作台", "desktop", "D02_Relay桌面_核验工作台.png", "真实桌面交互", "在 Relay，你可以从一条待核验主张开始。"),
     (2, "Relay手机三种输入", "mobile", "M02_Relay手机_核验工作台.png", "手机端输入交互", "文本、公开链接或截图，都能发起深度核验。"),
     (3, "八个全球主题Agent", "concept", "signals", "Signals 概念全景", "在 Signals，不是无限信息流，而是主题化的公开信号。"),
-    (3, "Signals桌面八主题", "desktop", "D07_Signals桌面_八主题Agent.png", "真实 Signals 界面", "八个主题 Agent 每天扫描全球公开新闻。"),
+    (3, "Signals手机八主题", "mobile", "M06_Signals手机_主题Agent.png", "Signals 手机端主题 Agent", "八个主题 Agent 每天扫描全球公开新闻。"),
     (4, "Gonka重要性排序", "concept", "signal_receipt", "Gonka 筛选概念", "第一道 Gonka 筛选，只判断一条信息是否值得关注。"),
-    (4, "Signals真实筛选回执", "desktop", "D09_Signals桌面_Gonka筛选结果.png", "真实 Gonka 情报卡", "它保留上游请求回执，但重要性绝不冒充真实度。"),
+    (4, "Signals手机筛选回执", "mobile", "M07_Signals手机_Gonka情报卡.png", "Signals 手机端 Gonka 情报卡", "它保留上游请求回执，但重要性绝不冒充真实度。"),
     (5, "Signals汇入Relay", "concept", "handoff", "用户控制的流转链", "候选信号不会自动进入知识星球。"),
-    (5, "DeepVerify交互", "desktop_crop", ("D09_Signals桌面_Gonka筛选结果.png", (0.23, 0.20, 0.99, 0.97)), "Deep verify 按钮与可核验主张", "只有你选中它，才会进入 FactRelay 的证据检索与交叉验证。"),
+    (5, "DeepVerify手机交互", "mobile", "M07_Signals手机_Gonka情报卡.png", "手机端 Deep verify 交互", "只有你选中它，才会进入 FactRelay 的证据检索与交叉验证。"),
     (6, "来源账本全景", "focus", ("06_真实结果_02_来源.png", (0.20, 0.04, 0.99, 0.94)), "真实来源账本", "每条来源都被放进一份编号账本。"),
     (6, "来源字段近景", "focus", ("06_真实结果_02_来源.png", (0.34, 0.22, 0.97, 0.86)), "发布者、日期、链接、立场与可信度", "发布者、日期、原始链接、立场和可信度都可回看。"),
     (7, "TruthScore真实结果", "focus", ("05_真实结果_01_结论.png", (0.21, 0.03, 0.99, 0.91)), "真实结论与评分", "最终结果展示可读的 Truth Score 和结论信心。"),
@@ -81,10 +81,10 @@ FRAME_PLAN = [
     (8, "越界来源编号被拒绝", "focus", ("06_真实结果_02_来源.png", (0.31, 0.33, 0.99, 0.99)), "来源编号校验", "模型只能引用账本中真实存在的来源编号。"),
     (8, "分歧与信任边界", "concept", "safety", "信任边界概念图", "无效编号会被拒绝，两个模型的分歧也会原样保留。"),
     (9, "EvidenceCouncil四方职责", "concept", "council", "Council 四角色概念", "Evidence Council 不是一群重复回答的聊天机器人。"),
-    (9, "Council真实桌面界面", "desktop", "D03_Council桌面_四方审理开场.png", "真实 Council 界面", "记录、调查、质疑和人工确认，被拆成四个清晰责任。"),
+    (9, "Council手机四方审理", "mobile", "M03_Council手机_四方审理.png", "Evidence Council 手机端", "记录、调查、质疑和人工确认，被拆成四个清晰责任。"),
     (10, "Kimi桌面调查卡", "desktop", "D04_Council桌面_Kimi调查方.png", "真实 Kimi 卡片", "Kimi-K2.6 担任调查方。"),
     (10, "Kimi证据判断近景", "focus", ("07_真实结果_03_双模型审查.png", (0.32, 0.26, 0.67, 0.99)), "Kimi 调查方推理", "它先形成一份基于编号证据的调查判断。"),
-    (11, "MiniMax桌面质疑卡", "desktop", "D05_Council桌面_MiniMax质疑方.png", "真实 MiniMax 卡片", "MiniMax-M2.7 担任对抗式质疑方。"),
+    (11, "MiniMax手机审查界面", "mobile", "M03_Council手机_四方审理.png", "MiniMax 手机端审查", "MiniMax-M2.7 担任对抗式质疑方。"),
     (11, "MiniMax对抗审查近景", "focus", ("07_真实结果_03_双模型审查.png", (0.60, 0.26, 0.94, 0.99)), "MiniMax 质疑方推理", "它专门检查循环引用、时间错位与遗漏背景。"),
     (12, "GonkaRequestID真实回执", "focus", ("08_真实结果_04_Gonka回执.png", (0.20, 0.10, 0.99, 0.90)), "Proof 区块真实回执", "每次推理都保留 Gonka 上游 Request ID 和执行顺序。"),
     (12, "公开站真实运行证明", "concept", "gonka_proof", "生产环境证明", "这些非空回执证明分析来自哪次真实请求。"),
@@ -95,7 +95,7 @@ FRAME_PLAN = [
     (15, "Mapbox深色知识地球", "concept", "atlas_map", "Mapbox 知识地球概念", "Atlas 使用深色 Mapbox 地球，让地理退到背景。"),
     (15, "Mapbox手机实际展示", "mobile", "M04_Atlas手机_Mapbox知识地球.png", "真实手机 Mapbox", "亮色事实节点、Truth Score 与可解释连线，会成为主角。"),
     (16, "未落位轨道", "concept", "unplaced", "不伪造坐标概念", "有些知识本来就没有可靠的地理语义。"),
-    (16, "NoFabricatedCoordinates界面", "mobile", "M04_Atlas手机_Mapbox知识地球.png", "真实不伪造坐标提示", "它们会明确留在未落位轨道，系统绝不伪造坐标。"),
+    (16, "NoFabricatedCoordinates界面", "mobile", "M04_Atlas手机_Mapbox知识地球.png", "手机端不伪造坐标提示", "它们会明确留在未落位轨道，系统绝不伪造坐标。"),
     (17, "浏览器本地私人知识谱系", "concept", "privacy", "隐私与知识谱系", "完整证据快照只保存在当前浏览器，形成可回看的私人知识谱系。"),
     (18, "FactAtlas品牌收尾", "close", None, "项目名与公开链接", "Fact Atlas：构建你的知识世界，让每条事实都保留回执。"),
 ]
@@ -154,25 +154,73 @@ def desktop_frame(source: Path, label: str, crop: tuple[float, float, float, flo
     return canvas
 
 
-def mobile_frame(source: Path, title: str, chinese: str) -> Image.Image:
+def paste_phone(canvas: Image.Image, source: Path, center_x: int, top: int, screen_height: int = 790) -> tuple[int, int, int, int]:
+    """Place one real mobile capture inside a restrained, centered phone shell."""
     screenshot = Image.open(source).convert("RGB")
-    screenshot.thumbnail((410, 860), Image.Resampling.LANCZOS)
+    screen_width = round(screenshot.width * screen_height / screenshot.height)
+    screenshot = screenshot.resize((screen_width, screen_height), Image.Resampling.LANCZOS)
+
+    phone_width = screen_width + 34
+    phone_height = screen_height + 54
+    left = center_x - phone_width // 2
+    right = left + phone_width
+    bottom = top + phone_height
+    draw = ImageDraw.Draw(canvas)
+    draw.rounded_rectangle((left + 18, top + 18, right + 18, bottom + 18), radius=58, fill=VIOLET)
+    draw.rounded_rectangle((left, top, right, bottom), radius=58, fill=PAPER, outline=BLACK, width=5)
+    draw.rounded_rectangle((left + 9, top + 9, right - 9, bottom - 9), radius=50, fill=BLACK)
+
+    screen_left = center_x - screen_width // 2
+    screen_top = top + 27
+    mask = Image.new("L", screenshot.size, 0)
+    ImageDraw.Draw(mask).rounded_rectangle((0, 0, screen_width, screen_height), radius=34, fill=255)
+    canvas.paste(screenshot, (screen_left, screen_top), mask)
+    speaker_width = 78
+    draw.rounded_rectangle(
+        (center_x - speaker_width // 2, top + 13, center_x + speaker_width // 2, top + 20),
+        radius=4,
+        fill="#4c4d48",
+    )
+    return left, top, right, bottom
+
+
+def mobile_frame(source: Path, title: str, chinese: str) -> Image.Image:
     canvas = Image.new("RGB", (WIDTH, HEIGHT), BLACK)
     draw = ImageDraw.Draw(canvas)
-    draw.text((92, 78), "MOBILE-FIRST · 手机端优先", font=font(FONT_CN, 24), fill=LIME)
-    # Use the CJK-capable face here because every mobile shot title is Chinese.
-    draw.multiline_text((92, 155), title, font=font(FONT_CN, 56), fill=PAPER, spacing=8)
-    draw.multiline_text((94, 355), chinese, font=font(FONT_CN, 31), fill="#d6d8d2", spacing=12)
-    tags = [("REAL UI", LIME), ("390 × 844", CYAN), ("BILINGUAL", PINK)]
-    for index, (tag, accent) in enumerate(tags):
-        x = 94 + index * 235
-        draw.rounded_rectangle((x, 690, x + 205, 750), radius=22, fill=accent, outline=BLACK, width=2)
-        draw.text((x + 24, 709), tag, font=font(FONT_BOLD, 18), fill=BLACK)
-    phone_x = 1375
-    phone_y = 56
-    draw.rounded_rectangle((phone_x - 20, phone_y - 20, phone_x + screenshot.width + 20, phone_y + screenshot.height + 20), radius=62, fill=VIOLET)
-    draw.rounded_rectangle((phone_x - 10, phone_y - 10, phone_x + screenshot.width + 10, phone_y + screenshot.height + 10), radius=56, fill=PAPER, outline=BLACK, width=4)
-    canvas.paste(screenshot, (phone_x, phone_y))
+    draw.rounded_rectangle((58, 46, 430, 112), radius=26, fill=LIME, outline=PAPER, width=2)
+    draw.text((86, 66), "MOBILE VERSION · 手机版", font=font(FONT_CN, 22), fill=BLACK)
+
+    title_font = font(FONT_CN, 25)
+    title_box = draw.textbbox((0, 0), title, font=title_font)
+    title_width = title_box[2] - title_box[0]
+    draw.text((WIDTH - 64 - title_width, 70), title, font=title_font, fill=PAPER)
+
+    paste_phone(canvas, source, WIDTH // 2, 132, 780)
+    cue_font = font(FONT_CN, 20)
+    cue_box = draw.textbbox((0, 0), chinese, font=cue_font)
+    cue_width = min(cue_box[2] - cue_box[0], WIDTH - 200)
+    draw.rounded_rectangle((WIDTH // 2 - cue_width // 2 - 28, 995, WIDTH // 2 + cue_width // 2 + 28, 1048), radius=20, fill="#20211e")
+    draw.text((WIDTH // 2 - cue_width // 2, 1008), chinese, font=cue_font, fill="#d7d9d3")
+    return canvas
+
+
+def responsive_frame() -> Image.Image:
+    canvas = Image.new("RGB", (WIDTH, HEIGHT), PAPER)
+    draw = ImageDraw.Draw(canvas)
+    draw.text((86, 58), "RESPONSIVE PRODUCT · 双端适配", font=font(FONT_CN, 27), fill=VIOLET)
+    draw.text((86, 122), "One product. Two native layouts.", font=font(FONT_BOLD, 61), fill=BLACK)
+    draw.text((88, 211), "网页端与手机端，都是完整的 Fact Atlas。", font=font(FONT_CN, 36), fill="#555750")
+
+    desktop = fit_crop(RAW / "D01_Relay桌面_产品开场.png").resize((1100, 619), Image.Resampling.LANCZOS)
+    draw.rounded_rectangle((68, 328, 1208, 987), radius=38, fill=VIOLET)
+    draw.rounded_rectangle((50, 310, 1190, 969), radius=38, fill=BLACK)
+    canvas.paste(desktop, (70, 330))
+    draw.rounded_rectangle((80, 336, 294, 394), radius=20, fill=CYAN, outline=BLACK, width=2)
+    draw.text((108, 354), "DESKTOP · 网页版", font=font(FONT_CN, 18), fill=BLACK)
+
+    paste_phone(canvas, RAW / "M01_Relay手机_产品开场.png", 1522, 218, 700)
+    draw.rounded_rectangle((1344, 918, 1700, 978), radius=22, fill=LIME, outline=BLACK, width=2)
+    draw.text((1380, 936), "MOBILE · 手机版", font=font(FONT_CN, 20), fill=BLACK)
     return canvas
 
 
@@ -204,6 +252,7 @@ def score_formula_frame() -> Image.Image:
 def concept_frame(name: str) -> Image.Image:
     builders = {
         "product": product_frame,
+        "responsive": responsive_frame,
         "paths": paths_frame,
         "signals": signals_frame,
         "signal_receipt": signal_receipt_frame,
@@ -360,7 +409,7 @@ def build_docx(path: Path, frame_paths: list[Path], rows: list[dict[str, str]]) 
     for cell, (value, label, fill) in zip(metrics.rows[0].cells, [
         ("02:30", "总时长", "EDE9FF"),
         ("36", "主镜头", LIME),
-        ("16", "公网实拍", CYAN),
+        ("10", "手机主镜头", CYAN),
         ("19", "口播母句", YELLOW),
     ]):
         shade(cell, word_color(fill))
@@ -435,7 +484,7 @@ def write_mapping(rows: list[dict[str, str]]) -> None:
     lines = [
         "# Fact Atlas 36 镜头口播画面对应表",
         "",
-        "36 张 1920×1080 主画面覆盖 150 秒口播；加上 16 张桌面/手机公网原始实拍，整个文件夹共有 52 张可剪辑素材。",
+        "36 张 1920×1080 主画面覆盖 150 秒口播；其中 10 张是手机竖屏居中的响应式产品镜头，另保留 16 张桌面/手机公网原始实拍。",
         "",
         "| # | 时间码 | 文件 | 画面用途 | 口播切点 |",
         "| ---: | --- | --- | --- | --- |",
@@ -458,17 +507,18 @@ def write_mapping(rows: list[dict[str, str]]) -> None:
 
 
 def write_readme() -> None:
-    content = """# Fact Atlas 36 镜头口播画面包
+    content = """# Fact Atlas 36 镜头双端适配口播画面包
 
 这个目录专门用于“先录口播，再合成视频”的工作流。
 
 - `00_真实界面原始截图`：16 张公网真实产品截图，包含桌面和手机端。
-- `01_按时间码排列_36张`：36 张 1920×1080 主画面，已按口播时间线排序。
+- `01_按时间码排列_36张`：36 张 1920×1080 主画面，已按口播时间线排序；其中 10 张是手机竖屏居中、简洁手机外壳包装的响应式镜头。
 - `00_36镜头总览_4K.png`：6×6 总览，用于快速检查整体节奏和色彩。
 - `00_36镜头口播对应表.csv/.md`：机器可读和人工可读的时间轴。
 - `FactAtlas_36镜头口播画面对应表.docx/.pdf`：供口播、剪辑与审阅的正式文档。
+- `FactAtlas_新版口播稿_网页手机双端适配.docx/.pdf`：已明确加入网页端与手机端适配说明的 150 秒正式口播母稿。
 
-口播录制完成后，只需提供一个完整音频文件。后期会根据 36 个时间段对齐画面，再处理降噪、响度、英文字幕和最终导出。
+口播第 2 句已明确说明“同时适配网页端和手机端”。录制完成后，只需提供一个完整音频文件，后期再根据 36 个时间段对齐画面。
 """
     (OUT / "README_使用说明.md").write_text(content, encoding="utf-8")
 

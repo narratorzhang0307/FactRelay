@@ -32,11 +32,11 @@ SCENES = [
         "number": "01",
         "time": "00:00–00:14",
         "title": "Frame the problem and product / 问题与产品开场",
-        "screen": "Open on the mobile Fact Atlas shell and show the three bottom tabs: Relay, Atlas, and Signals. Hold long enough to read the bilingual product promise.",
-        "narration": "个人知识库最危险的，不是缺少信息，而是把未经验证的说法当成事实。Fact Atlas 用三个标签连接两条路径：主动探索，与每日发现。",
+        "screen": "Open on the centered mobile Fact Atlas shell, then show a desktop/mobile comparison. Make the responsive adaptation and the Relay, Atlas, and Signals tabs unmistakable.",
+        "narration": "个人知识库最危险的，不是缺少信息，而是把未经验证的说法当成事实。Fact Atlas 同时适配网页端和手机端，用三个标签连接主动探索与每日发现。",
         "subtitles": [
             ("00:00.000 → 00:06.500", "A personal knowledge base fails when unverified claims quietly become facts."),
-            ("00:06.500 → 00:14.000", "Fact Atlas connects active exploration and daily discovery in three tabs."),
+            ("00:06.500 → 00:14.000", "Fact Atlas adapts to desktop and mobile, connecting active exploration and daily discovery in three tabs."),
         ],
         "color": VIOLET,
     },
@@ -271,8 +271,8 @@ def add_label_paragraph(doc: Document, label: str, text: str, fill: str = PAPER)
     r = p.add_run(label.upper() + "\n")
     set_font(r, 7.5, True, VIOLET)
     r2 = p.add_run(text)
-    set_font(r2, 10, False, INK)
-    p.paragraph_format.line_spacing = 1.18
+    set_font(r2, 9.4, False, INK)
+    p.paragraph_format.line_spacing = 1.12
 
 
 def configure_document(doc: Document) -> None:
@@ -404,7 +404,9 @@ def build_doc(output: Path) -> None:
     intro.paragraph_format.space_after = Pt(10)
 
     for index, scene in enumerate(SCENES):
-        if index in {2, 4, 6, 8}:
+        # Scene 03 already flows naturally to a new page after the expanded
+        # responsive opening. An explicit break there would create a blank page.
+        if index in {4, 6, 8}:
             doc.add_page_break()
         bar = doc.add_table(rows=1, cols=2)
         bar.style = "Table Grid"
@@ -433,7 +435,7 @@ def build_doc(output: Path) -> None:
             set_font(r1, 7.3, True, WHITE)
             p2 = subs.cell(row_idx, 1).paragraphs[0]
             r2 = p2.add_run(text)
-            set_font(r2, 9.2, False, INK)
+            set_font(r2, 8.8, False, INK)
 
         spacer = doc.add_paragraph()
         spacer.paragraph_format.space_after = Pt(2)

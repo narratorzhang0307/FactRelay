@@ -36,7 +36,7 @@ WHITE = "FFFFFF"
 
 SUBTITLES = [
     ("00:00:00,000", "00:00:06,500", "个人知识库最危险的，不是缺少信息，而是把未经验证的说法当成事实。", "A personal knowledge base fails when unverified claims quietly become facts."),
-    ("00:00:06,500", "00:00:14,000", "Fact Atlas 用三个标签连接两条路径：主动探索，与每日发现。", "Fact Atlas connects active exploration and daily discovery in three tabs."),
+    ("00:00:06,500", "00:00:14,000", "Fact Atlas 同时适配网页端和手机端，用三个标签连接主动探索与每日发现。", "Fact Atlas adapts to desktop and mobile, connecting active exploration and daily discovery in three tabs."),
     ("00:00:14,000", "00:00:22,000", "在 Relay，你可以提交文本、公开链接或截图，发起一次深度核验。", "Relay accepts text, a public link, or a screenshot for deep verification."),
     ("00:00:22,000", "00:00:30,500", "在 Signals，八个主题 Agent 每天扫描全球公开新闻。", "Eight Signals agents scan global public news every day."),
     ("00:00:30,500", "00:00:38,500", "第一道 Gonka 筛选只判断重要性，并保留请求回执；它不冒充真实度。", "Gonka ranks importance and keeps a receipt; importance is never presented as truth."),
