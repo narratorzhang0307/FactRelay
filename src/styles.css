@@ -172,6 +172,7 @@ a { color: inherit; }
 .pwa-install-help em { margin-top: 15px; display: block; color: var(--muted); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 7px; font-style: normal; }
 
 main { width: 100%; }
+.runtime-notice { min-height: 36px; padding: 8px 18px; display: flex; align-items: center; justify-content: center; gap: 9px; border-bottom: 1px solid rgba(255,255,255,.16); background: var(--yellow); color: var(--black); font-size: 9px; font-weight: 780; text-align: center; }
 .view-atlas, .view-signals { min-height: calc(100vh - 152px); padding-top: 1px; }
 
 .relay-pane-tabs { width: max-content; margin: 16px auto 0; padding: 4px; display: flex; align-items: center; gap: 4px; border: 1px solid rgba(255,255,255,.22); border-radius: 16px; background: rgba(255,255,255,.05); color: var(--white); }

@@ -7,20 +7,9 @@ import { SignalDesk } from "./components/SignalDesk";
 import { EvidenceCouncil } from "./components/EvidenceCouncil";
 import { PwaInstall } from "./components/PwaInstall";
 import { AgentOrchestration } from "./components/AgentOrchestration";
+import { requestJson } from "./api";
 import { formatProductHash, parseProductHash, type ProductLocation, type ProductView, type RelayPane } from "./navigation";
-import type { ApiError, HealthStatus, InputKind, VerificationResult } from "./types";
-
-async function getJson<T>(response: Response): Promise<T> {
-  const body = await response.json();
-  if (!response.ok) {
-    const apiError = body as ApiError;
-    const error = new Error(apiError.error?.message || `Request failed with ${response.status}. · 请求失败（${response.status}）`);
-    error.name = apiError.error?.code || "REQUEST_FAILED";
-    if (apiError.error?.details) error.message += ` ${apiError.error.details}`;
-    throw error;
-  }
-  return body as T;
-}
+import type { HealthStatus, InputKind, VerificationResult } from "./types";
 
 const HERO_BLOCKS = [
   {
@@ -95,6 +84,7 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [verificationElapsed, setVerificationElapsed] = useState(0);
   const [error, setError] = useState("");
+  const [startupNotice, setStartupNotice] = useState("");
   const [heroBlockIndex, setHeroBlockIndex] = useState(1);
   const [productLocation, setProductLocation] = useState<ProductLocation>(() => parseProductHash(window.location.hash));
   const heroTouchStartX = useRef<number | null>(null);
@@ -127,7 +117,7 @@ export default function App() {
   const loadPreview = async () => {
     try {
       setError("");
-      setResult(await getJson<VerificationResult>(await fetch("/api/demo")));
+      setResult(await requestJson<VerificationResult>("/api/demo"));
     } catch (previewError) {
       setError(previewError instanceof Error ? previewError.message : "Could not load the preview. · 无法加载预览。");
     }
@@ -147,12 +137,16 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    void Promise.all([
-      fetch("/api/health").then(getJson<HealthStatus>).then(setHealth),
-      fetch("/api/demo").then(getJson<VerificationResult>).then(setResult),
-    ]).catch((startupError) => {
-      setError(startupError instanceof Error ? startupError.message : "FactRelay could not start. · FactRelay 无法启动。");
-    });
+    let active = true;
+    void requestJson<HealthStatus>("/api/health")
+      .then((value) => { if (active) setHealth(value); })
+      .catch(() => { if (active) setStartupNotice("Runtime status is unavailable; the preview remains usable. · 暂时无法读取运行状态，预览仍可使用。"); });
+    void requestJson<VerificationResult>("/api/demo")
+      .then((value) => { if (active) setResult(value); })
+      .catch((startupError) => {
+        if (active) setError(startupError instanceof Error ? startupError.message : "The preview could not load. · 预览无法加载。");
+      });
+    return () => { active = false; };
   }, []);
 
   useEffect(() => {
@@ -175,13 +169,13 @@ export default function App() {
     setLoading(true);
     setError("");
     try {
-      const response = await fetch("/api/verify", {
+      const nextResult = await requestJson<VerificationResult>("/api/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ kind, content, ...(kind === "image" ? { imageDataUrl } : {}) }),
         signal: controller.signal,
       });
-      setResult(await getJson<VerificationResult>(response));
+      setResult(nextResult);
       window.setTimeout(() => document.querySelector("[data-testid='result-view']")?.scrollIntoView({ behavior: "smooth", block: "start" }), 40);
     } catch (verificationError) {
       if (controller.signal.aborted) return;
@@ -220,6 +214,7 @@ export default function App() {
         </header>
 
         <main id="top" className={`view-${activeView}`}>
+          {startupNotice && <div className="runtime-notice" role="status"><i className="pulse-dot" />{startupNotice}</div>}
           {activeView === "relay" && <div id="relay-view">
           <nav className="relay-pane-tabs" aria-label="FactRelay views · FactRelay 视图">
             <button type="button" className={relayPane === "verify" ? "active" : ""} aria-pressed={relayPane === "verify"} onClick={() => selectRelayPane("verify")}><FileSearch size={16} /><span>Verification<small>事实核验</small></span></button>

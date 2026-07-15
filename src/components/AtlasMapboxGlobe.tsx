@@ -2,6 +2,7 @@ import mapboxgl, { type GeoJSONSource, type Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { MapPin, Orbit } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { requestJson } from "../api";
 import { VERDICT_COLOR, type AtlasLink, type AtlasNode } from "../atlas";
 
 interface Props {
@@ -49,9 +50,7 @@ export function AtlasMapboxGlobe({ nodes, links, selectedId, centerLng, onSelect
     let disposed = false;
     let loaded = false;
     let observer: ResizeObserver | null = null;
-    void fetch("/api/map-config").then(async (response) => {
-      if (!response.ok) throw new Error("Map configuration request failed.");
-      const config = await response.json() as MapConfig;
+    void requestJson<MapConfig>("/api/map-config").then((config) => {
       if (disposed || !containerRef.current) return;
       if (!config.enabled || !config.token) {
         setError("Mapbox public token is not configured. · 尚未配置 Mapbox 公开令牌。");

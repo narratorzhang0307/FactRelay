@@ -1,5 +1,6 @@
 import { Check, ChevronLeft, ChevronRight, ExternalLink, Globe2, MapPin, Orbit, Search, Trash2 } from "lucide-react";
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
+import { requestJson } from "../api";
 import {
   buildAtlasLinks,
   loadAtlasNodes,
@@ -84,11 +85,10 @@ export function FactAtlas({ currentResult, onOpenResult }: Props) {
     setLookupError("");
     setCandidates([]);
     try {
-      const response = await fetch(`/api/geocode?q=${encodeURIComponent(query.trim())}`);
-      const payload = await response.json();
-      if (!response.ok) throw new Error(payload?.error?.message || "Place lookup failed. · 地点检索失败。");
-      setCandidates(Array.isArray(payload.candidates) ? payload.candidates : []);
-      if (!payload.candidates?.length) setLookupError("No place matched. Save it unplaced or try a broader name. · 未找到地点，可留在轨道或换一个更宽泛的名称。");
+      const payload = await requestJson<{ candidates: GeocodeCandidate[] }>(`/api/geocode?q=${encodeURIComponent(query.trim())}`);
+      const nextCandidates = Array.isArray(payload.candidates) ? payload.candidates : [];
+      setCandidates(nextCandidates);
+      if (!nextCandidates.length) setLookupError("No place matched. Save it unplaced or try a broader name. · 未找到地点，可留在轨道或换一个更宽泛的名称。");
     } catch (error) {
       setLookupError(error instanceof Error ? error.message : "Place lookup failed. · 地点检索失败。");
     } finally {

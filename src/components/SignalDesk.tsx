@@ -22,8 +22,9 @@ import {
   Wrench,
 } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { requestJson } from "../api";
 import { loadSignalBrief, saveSignalBrief } from "../signal-cache";
-import type { ApiError, DailySignal, DailySignalBrief, SignalTopic } from "../types";
+import type { DailySignal, DailySignalBrief, SignalTopic } from "../types";
 
 interface Props {
   onInvestigate: (signal: DailySignal) => void;
@@ -49,13 +50,7 @@ function utcDate(offset = 0): string {
 }
 
 async function getBrief(topic: SignalTopic, date: string, signal?: AbortSignal): Promise<DailySignalBrief> {
-  const response = await fetch(`/api/signals?topic=${topic}&date=${encodeURIComponent(date)}`, { signal });
-  const payload = await response.json();
-  if (!response.ok) {
-    const error = payload as ApiError;
-    throw new Error(error.error?.message || "The signal scout is temporarily unavailable. · 情报侦察员暂时不可用。");
-  }
-  return payload as DailySignalBrief;
+  return requestJson<DailySignalBrief>(`/api/signals?topic=${topic}&date=${encodeURIComponent(date)}`, { signal });
 }
 
 function readableDate(value: string | null): string {
