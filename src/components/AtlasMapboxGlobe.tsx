@@ -50,6 +50,7 @@ export function AtlasMapboxGlobe({ nodes, links, selectedId, centerLng, onSelect
     let loaded = false;
     let observer: ResizeObserver | null = null;
     void fetch("/api/map-config").then(async (response) => {
+      if (!response.ok) throw new Error("Map configuration request failed.");
       const config = await response.json() as MapConfig;
       if (disposed || !containerRef.current) return;
       if (!config.enabled || !config.token) {
@@ -89,7 +90,9 @@ export function AtlasMapboxGlobe({ nodes, links, selectedId, centerLng, onSelect
       });
       observer = new ResizeObserver(() => map.resize());
       observer.observe(containerRef.current);
-    }).catch(() => setError("Map configuration could not load. · 地图配置加载失败。"));
+    }).catch(() => {
+      if (!disposed) setError("Map configuration could not load. · 地图配置加载失败。");
+    });
 
     return () => {
       disposed = true;
@@ -119,7 +122,9 @@ export function AtlasMapboxGlobe({ nodes, links, selectedId, centerLng, onSelect
       element.className = `atlas-map-marker${selectedId === node.id ? " selected" : ""}`;
       element.style.setProperty("--marker-color", VERDICT_COLOR[node.result.verdict]);
       element.setAttribute("aria-label", `${node.result.claim} — ${node.placement.label}`);
-      element.innerHTML = `<span>${node.result.truthScore}</span>`;
+      const score = document.createElement("span");
+      score.textContent = String(node.result.truthScore);
+      element.append(score);
       element.addEventListener("click", () => onSelectRef.current(node.id));
       return [new mapboxgl.Marker({ element, anchor: "bottom" }).setLngLat([node.placement.lng, node.placement.lat]).addTo(map)];
     });

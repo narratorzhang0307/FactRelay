@@ -1,4 +1,4 @@
-import { Archive, ChevronLeft, ChevronRight, FileSearch, Gavel, Github, Globe2, Radio, RadioTower } from "lucide-react";
+import { Archive, ChevronLeft, ChevronRight, FileSearch, Gavel, Github, Globe2, Radio, RadioTower, type LucideIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { ClaimComposer } from "./components/ClaimComposer";
 import { ResultView } from "./components/ResultView";
@@ -50,6 +50,41 @@ const HERO_BLOCKS = [
 
 type ProductView = "relay" | "atlas" | "signals";
 
+const PRODUCT_VIEWS: Array<{ id: ProductView; label: string; labelZh: string; Icon: LucideIcon }> = [
+  { id: "relay", label: "Relay", labelZh: "探索", Icon: FileSearch },
+  { id: "atlas", label: "Atlas", labelZh: "星图", Icon: Globe2 },
+  { id: "signals", label: "Signals", labelZh: "发现", Icon: RadioTower },
+];
+
+function ProductTabs({
+  activeView,
+  className,
+  iconSize,
+  onSelect,
+}: {
+  activeView: ProductView;
+  className: string;
+  iconSize: number;
+  onSelect: (view: ProductView) => void;
+}) {
+  return (
+    <nav className={className} aria-label={className === "mobile-tabbar" ? "Mobile product tabs · 手机端产品标签" : "Product views · 产品视图"}>
+      {PRODUCT_VIEWS.map(({ id, label, labelZh, Icon }) => (
+        <button
+          type="button"
+          key={id}
+          className={activeView === id ? "active" : ""}
+          aria-current={activeView === id ? "page" : undefined}
+          onClick={() => onSelect(id)}
+        >
+          <Icon size={iconSize} />
+          <span>{label}<small>{labelZh}</small></span>
+        </button>
+      ))}
+    </nav>
+  );
+}
+
 export default function App() {
   const [kind, setKind] = useState<InputKind>("text");
   const [content, setContent] = useState("");
@@ -64,6 +99,11 @@ export default function App() {
   const [relayPane, setRelayPane] = useState<"verify" | "council">("verify");
   const heroTouchStartX = useRef<number | null>(null);
   const heroBlock = HERO_BLOCKS[heroBlockIndex];
+
+  const selectProductView = (view: ProductView) => {
+    if (view === "relay") setRelayPane("verify");
+    setActiveView(view);
+  };
 
   const moveHeroBlock = (direction: -1 | 1) => {
     setHeroBlockIndex((current) => (current + direction + HERO_BLOCKS.length) % HERO_BLOCKS.length);
@@ -109,15 +149,11 @@ export default function App() {
     <div className="app-shell">
       <div className="product-frame">
         <header className="site-header">
-          <a className="brand" href="#top" aria-label="Fact Atlas home" onClick={() => { setRelayPane("verify"); setActiveView("relay"); }}>
+          <a className="brand" href="#top" aria-label="Fact Atlas home" onClick={() => selectProductView("relay")}>
             <span className="brand-mark"><Globe2 size={19} /></span>
             <span className="brand-copy"><strong>Fact Atlas</strong><small>知识星球 · powered by FactRelay</small></span>
           </a>
-          <nav className="product-nav" aria-label="Product views · 产品视图">
-            <button type="button" className={activeView === "relay" ? "active" : ""} onClick={() => { setRelayPane("verify"); setActiveView("relay"); }}><FileSearch size={14} /><span>Relay<small>探索</small></span></button>
-            <button type="button" className={activeView === "atlas" ? "active" : ""} onClick={() => setActiveView("atlas")}><Globe2 size={14} /><span>Atlas<small>星图</small></span></button>
-            <button type="button" className={activeView === "signals" ? "active" : ""} onClick={() => setActiveView("signals")}><RadioTower size={14} /><span>Signals<small>发现</small></span></button>
-          </nav>
+          <ProductTabs activeView={activeView} className="product-nav" iconSize={14} onSelect={selectProductView} />
           <div className="header-meta">
             <span className="header-status" aria-label="Network status"><i className={health?.liveReady ? "pulse-dot connected" : "pulse-dot"} />{health?.liveReady ? "Gonka live · 已连接" : "Preview · 预览"}</span>
             <PwaInstall />
@@ -269,20 +305,20 @@ export default function App() {
               {!loading && result && <>
                 <ResultView result={result} />
                 <div className="result-next-actions">
-                  <button type="button" onClick={() => setActiveView("atlas")}><Archive size={16} /><span>Place in Fact Atlas<small>写入知识星球</small></span></button>
+                  <button type="button" onClick={() => selectProductView("atlas")}><Archive size={16} /><span>Place in Fact Atlas<small>写入知识星球</small></span></button>
                   <button type="button" onClick={() => setRelayPane("council")}><Gavel size={16} /><span>Open Evidence Council<small>进入多方审理</small></span></button>
                 </div>
               </>}
             </div>
           </section>
-          </> : <EvidenceCouncil result={result} onGoRelay={() => setRelayPane("verify")} onGoAtlas={() => setActiveView("atlas")} />}
+          </> : <EvidenceCouncil result={result} onGoRelay={() => setRelayPane("verify")} onGoAtlas={() => selectProductView("atlas")} />}
           </>}
 
           {activeView === "atlas" && <FactAtlas
             currentResult={result}
             onOpenResult={(atlasResult) => {
               setResult(atlasResult);
-              setActiveView("relay");
+              selectProductView("relay");
               window.setTimeout(() => document.querySelector("[data-testid='result-view']")?.scrollIntoView({ behavior: "smooth", block: "start" }), 40);
             }}
           />}
@@ -293,18 +329,13 @@ export default function App() {
               setImageDataUrl("");
               setImageName("");
               setError("");
-              setRelayPane("verify");
-              setActiveView("relay");
+              selectProductView("relay");
               window.setTimeout(() => document.querySelector(".workspace")?.scrollIntoView({ behavior: "smooth", block: "start" }), 40);
             }}
           />}
         </main>
 
-        <nav className="mobile-tabbar" aria-label="Mobile product tabs · 手机端产品标签">
-          <button type="button" className={activeView === "relay" ? "active" : ""} onClick={() => { setRelayPane("verify"); setActiveView("relay"); }}><FileSearch size={20} /><span>Relay<small>探索</small></span></button>
-          <button type="button" className={activeView === "atlas" ? "active" : ""} onClick={() => setActiveView("atlas")}><Globe2 size={22} /><span>Atlas<small>星图</small></span></button>
-          <button type="button" className={activeView === "signals" ? "active" : ""} onClick={() => setActiveView("signals")}><RadioTower size={20} /><span>Signals<small>发现</small></span></button>
-        </nav>
+        <ProductTabs activeView={activeView} className="mobile-tabbar" iconSize={21} onSelect={selectProductView} />
 
         <footer>
           <span>Fact Atlas · Relay → Atlas ← Signals · 两种知识路径，一个私人星球</span>

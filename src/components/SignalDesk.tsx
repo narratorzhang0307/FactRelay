@@ -135,10 +135,18 @@ export function SignalDesk({ onInvestigate }: Props) {
 
         <div className="signals-agent-grid" role="group" aria-label="Topic agents · 主题侦察员">
           {TOPICS.map((item) => (
-            <button type="button" key={item.id} className={topic === item.id ? "active" : ""} onClick={() => {
-              setRefreshKey(0);
-              setTopic(item.id);
-            }} style={{ "--agent-color": item.color } as React.CSSProperties}>
+            <button
+              type="button"
+              key={item.id}
+              className={topic === item.id ? "active" : ""}
+              aria-pressed={topic === item.id}
+              aria-label={`${item.label} · ${item.labelZh}`}
+              onClick={() => {
+                setRefreshKey(0);
+                setTopic(item.id);
+              }}
+              style={{ "--agent-color": item.color } as React.CSSProperties}
+            >
               <i>{item.icon}</i><span>{item.label}<small>{item.labelZh}</small></span><em>SUBAGENT</em><Bot size={15} />
             </button>
           ))}
@@ -197,8 +205,8 @@ export function SignalDesk({ onInvestigate }: Props) {
 
           {activeSignal && brief ? (
             <div className="signal-deck-stage">
-              <button className="signal-deck-arrow previous" type="button" onClick={() => moveSignal(-1)} aria-label="Previous signal · 上一条"><ChevronLeft size={25} /></button>
-              <div className="signal-deck-stack" data-position={`${activeSignalIndex + 1}-${signals.length}`}>
+              <button className="signal-deck-arrow previous" type="button" onClick={() => moveSignal(-1)} disabled={signals.length < 2} aria-label="Previous signal · 上一条"><ChevronLeft size={25} /></button>
+              <div className="signal-deck-stack" data-position={`${activeSignalIndex + 1}-${signals.length}`} aria-live="polite">
                 <article
                   className="signal-card signal-card-active"
                   key={activeSignal.id}
@@ -231,9 +239,9 @@ export function SignalDesk({ onInvestigate }: Props) {
                   </div>
                 </article>
               </div>
-              <button className="signal-deck-arrow next" type="button" onClick={() => moveSignal(1)} aria-label="Next signal · 下一条"><ChevronRight size={25} /></button>
+              <button className="signal-deck-arrow next" type="button" onClick={() => moveSignal(1)} disabled={signals.length < 2} aria-label="Next signal · 下一条"><ChevronRight size={25} /></button>
               <div className="signal-deck-progress" aria-label="Signal position · 情报位置">
-                {signals.map((signal, index) => <button type="button" key={signal.id} className={index === activeSignalIndex ? "active" : ""} onClick={() => setActiveSignalIndex(index)} aria-label={`Open signal ${index + 1} · 打开第 ${index + 1} 条`} />)}
+                {signals.map((signal, index) => <button type="button" key={signal.id} className={index === activeSignalIndex ? "active" : ""} aria-current={index === activeSignalIndex ? "step" : undefined} onClick={() => setActiveSignalIndex(index)} aria-label={`Open signal ${index + 1} · 打开第 ${index + 1} 条`} />)}
                 <span>Use arrows or swipe · 使用箭头或滑动</span>
               </div>
             </div>
