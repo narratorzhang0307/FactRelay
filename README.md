@@ -109,7 +109,7 @@ NODE_ENV=production HOST=127.0.0.1 PORT=5173 node server.mjs
 
 | Variable | Required | Default |
 | --- | --- | --- |
-| `GONKA_API_KEY` | Live verification and Signals | — |
+| `GONKA_API_KEY` | Live verification and uncached Signals dates | — |
 | `GONKA_BASE_URL` | No | `https://api.gonkarouter.io/v1` |
 | `KIMI_MODEL` | No | `moonshotai/Kimi-K2.6` |
 | `MINIMAX_MODEL` | No | `MiniMaxAI/MiniMax-M2.7` |
@@ -124,7 +124,7 @@ NODE_ENV=production HOST=127.0.0.1 PORT=5173 node server.mjs
 | `GET` | `/api/health` | Readiness and configured model IDs; never returns keys |
 | `GET` | `/api/demo` | Explicitly labeled non-live preview fixture |
 | `GET` | `/api/geocode?q=...` | Non-AI place candidates for user confirmation |
-| `GET` | `/api/signals?topic=...&date=YYYY-MM-DD` | Dated news candidates ranked through GonkaRouter |
+| `GET` | `/api/signals?topic=...&date=YYYY-MM-DD` | Dated news candidates; validated snapshots are served first, otherwise GonkaRouter ranks a live scan |
 | `GET` | `/api/map-config` | Browser-safe Mapbox public configuration |
 | `POST` | `/api/verify` | Complete verification pipeline |
 
@@ -135,13 +135,13 @@ npm run verify
 npm audit --audit-level=low
 ```
 
-`npm run verify` performs strict TypeScript checking, **42 unit tests across 10 files**, and production builds for the self-hosted server and edge-worker target.
+`npm run verify` performs strict TypeScript checking, **44 unit tests across 10 files**, and production builds for the self-hosted server and edge-worker target.
 
 ## Repository map
 
 ```text
 src/                 React product UI and browser-local Atlas state
-server/              retrieval, Gonka clients, agents, scoring, and tests
+server/              retrieval, Gonka clients, dated signal snapshots, scoring, and tests
 worker/              edge-hosting API entry
 public/              PWA manifest, icons, service worker, social preview
 deploy/online/       isolated PM2 + Nginx deployment assets
@@ -154,6 +154,7 @@ docs/                architecture, PWA, agents, operations, and Atlas model
 - [`docs/AGENT_SYSTEM.md`](docs/AGENT_SYSTEM.md) — supervisors, subagents, Skills, and handoff contracts
 - [`docs/FACT_ATLAS.md`](docs/FACT_ATLAS.md) — fact-node model, placement, and explainable relations
 - [`docs/PWA.md`](docs/PWA.md) — iOS/Android installation, offline boundary, and update lifecycle
+- [`docs/SIGNALS.md`](docs/SIGNALS.md) — dated snapshot lifecycle, validation rules, and cache semantics
 - [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) — isolated self-hosting layout and TLS setup
 - [`docs/OPERATIONS.md`](docs/OPERATIONS.md) — health checks, logs, rollback, and incident handling
 - [`SECURITY.md`](SECURITY.md) — responsible disclosure and security model

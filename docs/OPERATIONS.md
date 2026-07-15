@@ -41,7 +41,7 @@ Before sharing logs, remove user-submitted claims, remote page excerpts, request
 | Root loads but verification fails | Gonka credential, provider, or evidence retrieval | PM2 log plus structured API error code |
 | Atlas has no basemap | Mapbox public token or Mapbox network access | `/api/map-config` and browser console |
 | Installed app shows old shell | Service-worker update lifecycle | manifest/SW cache headers and cache version |
-| Signals is empty | Date window, RSS availability, or Gonka ranking | `/api/signals?...` response and trace |
+| Signals is empty | Snapshot miss, date window, RSS availability, or Gonka ranking | `cacheLayer`, `/api/signals?...` response, and trace |
 
 ## Security-sensitive incidents
 
@@ -57,7 +57,7 @@ Never place a replacement key in an issue, commit, screenshot, shell transcript,
 
 ## Availability boundary
 
-The PWA shell can open offline, but verification, Signals, geocoding, receipts, and Mapbox configuration require a current network response. This is intentional: availability must not make stale evidence appear current.
+The PWA shell can open offline. A dated Signals snapshot can be served without new retrieval or inference once the app reaches the server, while uncached dates, verification, geocoding, and Mapbox configuration still require current upstream access. Snapshot cards visibly retain their edition date and are never relabeled as current evidence.
 
 ## Regression check for a shared host
 

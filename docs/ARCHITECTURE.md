@@ -73,6 +73,9 @@ The executable Agent/Skill decomposition and handoff contracts are documented in
 ```text
 Signal Supervisor
   → selected date + one of eight topic agents
+  → validated immutable snapshot lookup
+  → snapshot hit: return cards + original Gonka receipt immediately
+  → snapshot miss: continue with the live path below
   → multi-region Google/Bing public-news retrieval
   → deterministic date-window filter + normalization + deduplication
   → Kimi importance ranking through GonkaRouter
@@ -82,6 +85,8 @@ Signal Supervisor
 ```
 
 The first-stage `importance` score is explicitly not a Truth Score. It prioritizes which items may deserve attention; it does not assert that the headline is true.
+
+Snapshots do not bypass inference. They preserve the output of an earlier completed Gonka ranking, including its request ID, trace, generation time, and source URLs. A checked-in snapshot is immutable for its date. Runtime in-memory caching is a separate, shorter-lived layer. See [`SIGNALS.md`](SIGNALS.md) for the generation and validation contract.
 
 ### Text claim
 
