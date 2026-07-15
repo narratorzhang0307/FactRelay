@@ -12,7 +12,7 @@ Relay accepts text, a public link, or a screenshot for deep verification.
 
 4
 00:00:22,000 --> 00:00:30,500
-Eight Signals agents scan global public news every day.
+Signals routes global news by topic and date, one swipeable card at a time.
 
 5
 00:00:30,500 --> 00:00:38,500
@@ -36,7 +36,7 @@ Invalid source indexes are rejected, and model disagreement stays visible.
 
 10
 00:01:11,500 --> 00:01:19,500
-Evidence Council separates clerk, investigator, skeptic, and human gate.
+The FactRelay supervisor coordinates six bounded subagents and reusable Skills.
 
 11
 00:01:19,500 --> 00:01:28,000

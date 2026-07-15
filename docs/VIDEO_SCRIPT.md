@@ -29,15 +29,15 @@
 ### 02 · 00:14–00:30.5 · Two knowledge paths / 两条知识路径
 
 **Screen / 画面**
-展示 Relay 的文本、链接和图片输入，再切换到 Signals，横扫八个主题 Agent 和每日简报。
+展示 Relay 的文本、链接和图片输入，再切换到 Signals：选择主题与日期，一次浏览一张可左右滑动的新闻卡。
 
 **Narration / 旁白**
-在 Relay，你可以提交文本、公开链接或截图，发起一次深度核验。在 Signals，八个主题 Agent 每天扫描全球公开新闻。
+在 Relay，你可以提交文本、公开链接或截图，发起一次深度核验。Signals 按主题和日期抓取全球新闻，一次只呈现一张可滑动卡片。
 
 **English subtitle cues / 英文字幕**
 
 - `00:14.000 → 00:22.000` Relay accepts text, a public link, or a screenshot for deep verification.
-- `00:22.000 → 00:30.500` Eight Signals agents scan global public news every day.
+- `00:22.000 → 00:30.500` Signals routes global news by topic and date, one swipeable card at a time.
 
 ### 03 · 00:30.5–00:46.5 · Rank, then verify / 先筛选，再核验
 
@@ -68,15 +68,15 @@
 ### 05 · 01:03–01:19.5 · Disagreement and responsibility / 分歧与责任
 
 **Screen / 画面**
-展示来源编号校验提示，然后打开 Evidence Council 的四角色流程。
+展示来源编号校验提示，再打开 FactRelay 主 Agent 编排图，依次展示六个子 Agent 与可复用 Skills。
 
 **Narration / 旁白**
-无效来源编号会被拒绝，模型分歧也会原样保留。Evidence Council 把记录、调查、质疑和人工确认分成四个清晰责任。
+无效来源编号会被拒绝，模型分歧也会原样保留。FactRelay 主 Agent 编排六个子 Agent：受理、证据、调查、质疑、裁决和回执。
 
 **English subtitle cues / 英文字幕**
 
 - `01:03.000 → 01:11.500` Invalid source indexes are rejected, and model disagreement stays visible.
-- `01:11.500 → 01:19.500` Evidence Council separates clerk, investigator, skeptic, and human gate.
+- `01:11.500 → 01:19.500` The FactRelay supervisor coordinates six bounded subagents and reusable Skills.
 
 ### 06 · 01:19.5–01:36.5 · Adversarial models / 双模型对抗
 

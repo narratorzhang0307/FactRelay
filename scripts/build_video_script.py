@@ -44,11 +44,11 @@ SCENES = [
         "number": "02",
         "time": "00:14–00:30.5",
         "title": "Show both knowledge paths / 展示两条知识路径",
-        "screen": "Show Relay text/link/image inputs, then switch to Signals and pan across the eight topic-agent chips and the daily brief.",
-        "narration": "在 Relay，你可以提交文本、公开链接或截图，发起一次深度核验。在 Signals，八个主题 Agent 每天扫描全球公开新闻。",
+        "screen": "Show Relay text/link/image inputs, then switch to Signals. Select a topic and date, and swipe one news card at a time.",
+        "narration": "在 Relay，你可以提交文本、公开链接或截图，发起一次深度核验。Signals 按主题和日期抓取全球新闻，一次只呈现一张可滑动卡片。",
         "subtitles": [
             ("00:14.000 → 00:22.000", "Relay accepts text, a public link, or a screenshot for deep verification."),
-            ("00:22.000 → 00:30.500", "Eight Signals agents scan global public news every day."),
+            ("00:22.000 → 00:30.500", "Signals routes global news by topic and date, one swipeable card at a time."),
         ],
         "color": LIME,
     },
@@ -79,12 +79,12 @@ SCENES = [
     {
         "number": "05",
         "time": "01:03–01:19.5",
-        "title": "Preserve disagreement and responsibility / 保留分歧与责任",
-        "screen": "Show the source-index validation note, then open Evidence Council and pause on its four-role flow.",
-        "narration": "无效来源编号会被拒绝，模型分歧也会原样保留。Evidence Council 把记录、调查、质疑和人工确认分成四个清晰责任。",
+        "title": "Preserve disagreement and bounded agents / 保留分歧与边界",
+        "screen": "Show the source-index validation note, then reveal the FactRelay supervisor coordinating its six bounded subagents and reusable Skills.",
+        "narration": "无效来源编号会被拒绝，模型分歧也会原样保留。FactRelay 主 Agent 编排六个子 Agent：受理、证据、调查、质疑、裁决和回执。",
         "subtitles": [
             ("01:03.000 → 01:11.500", "Invalid source indexes are rejected, and model disagreement stays visible."),
-            ("01:11.500 → 01:19.500", "Evidence Council separates clerk, investigator, skeptic, and human gate."),
+            ("01:11.500 → 01:19.500", "The FactRelay supervisor coordinates six bounded subagents and reusable Skills."),
         ],
         "color": YELLOW,
     },
@@ -216,7 +216,7 @@ def set_table_geometry(table, widths: list[int], indent: int = 120) -> None:
             cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
 
 
-def set_font(run, size: float | None = None, bold: bool | None = None, color: str | None = None, name: str = "Source Han Serif CN") -> None:
+def set_font(run, size: float | None = None, bold: bool | None = None, color: str | None = None, name: str = "STSong") -> None:
     run.font.name = name
     r_fonts = run._element.get_or_add_rPr().rFonts
     for key in ("w:ascii", "w:hAnsi", "w:eastAsia", "w:cs"):
@@ -285,9 +285,9 @@ def configure_document(doc: Document) -> None:
     section.right_margin = Inches(1)
 
     normal = doc.styles["Normal"]
-    normal.font.name = "Source Han Serif CN"
+    normal.font.name = "STSong"
     for key in ("w:ascii", "w:hAnsi", "w:eastAsia", "w:cs"):
-        normal._element.rPr.rFonts.set(qn(key), "Source Han Serif CN")
+        normal._element.rPr.rFonts.set(qn(key), "STSong")
     normal.font.size = Pt(10.5)
     normal.font.color.rgb = RGBColor.from_string(INK)
     normal.paragraph_format.space_after = Pt(6)
@@ -300,9 +300,9 @@ def configure_document(doc: Document) -> None:
         ("Heading 3", 11, INK, 10, 5),
     ):
         style = doc.styles[name]
-        style.font.name = "Source Han Serif CN"
+        style.font.name = "STSong"
         for key in ("w:ascii", "w:hAnsi", "w:eastAsia", "w:cs"):
-            style._element.rPr.rFonts.set(qn(key), "Source Han Serif CN")
+            style._element.rPr.rFonts.set(qn(key), "STSong")
         style.font.size = Pt(size)
         style.font.bold = True
         style.font.color.rgb = RGBColor.from_string(color)

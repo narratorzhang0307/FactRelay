@@ -6,8 +6,8 @@ Target / 目标：AI³ Growth Hackathon 2026 · Track 3 — Gonka: AI for Societ
 ## Product / 产品
 
 - [x] Mobile and desktop expose Relay, Atlas, and Signals as one coherent product.
-- [x] Relay contains both direct Verification and the four-role Evidence Council.
-- [x] Eight Signals topic agents rank current public news through Gonka; importance is never labeled truth.
+- [x] Relay contains direct Verification, the Evidence Council interface, and an explicit six-subagent orchestration with reusable Skills.
+- [x] A Signals supervisor coordinates eight dated topic agents, one swipeable card at a time; importance is never labeled truth.
 - [x] Text, public URL, and PNG/JPEG/WebP input paths are present.
 - [x] All semantic inference routes through GonkaRouter.
 - [x] Kimi-K2.6 and MiniMax-M2.7 have distinct investigator/skeptic roles.
@@ -33,10 +33,11 @@ Target / 目标：AI³ Growth Hackathon 2026 · Track 3 — Gonka: AI for Societ
 - [x] Public demo returns HTTP 200 and `/api/health` reports `liveReady: true`.
 - [x] Public smoke run: live mode, Refuted, Truth Score 18, confidence 93%, 5 sources.
 - [x] Both model cards contain non-null Gonka Request IDs.
-- [x] Public Signals run returned five current AI candidates with a real Gonka scout receipt.
+- [x] Public dated Signals run returned current AI candidates with Reuters/C&EN sources and a real Gonka scout receipt.
 - [x] Public Mapbox configuration is enabled with the dark-v11 style; the public token is delivered only through the server route.
 - [x] Public page browser console contains no errors or warnings.
-- [x] Desktop layout, card arrows, keyboard navigation, mobile three-tab navigation, and touch-friendly Mapbox controls are present.
+- [x] Desktop layout, card arrows, keyboard navigation, mobile swipe, fixed three-tab navigation, and touch-friendly Mapbox controls are present.
+- [x] PWA manifest, service worker, install prompt, icons, standalone launch mode, and API network-only policy are present.
 - [x] Mobile Atlas has no horizontal overflow and the Mapbox canvas fills its 390px stage.
 
 ## Video / 视频

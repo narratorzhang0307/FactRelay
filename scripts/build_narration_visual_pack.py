@@ -69,7 +69,7 @@ FRAME_PLAN = [
     (2, "Relay桌面工作台", "desktop", "D02_Relay桌面_核验工作台.png", "真实桌面交互", "在 Relay，你可以从一条待核验主张开始。"),
     (2, "Relay手机三种输入", "mobile", "M02_Relay手机_核验工作台.png", "手机端输入交互", "文本、公开链接或截图，都能发起深度核验。"),
     (3, "八个全球主题Agent", "concept", "signals", "Signals 概念全景", "在 Signals，不是无限信息流，而是主题化的公开信号。"),
-    (3, "Signals手机八主题", "mobile", "M06_Signals手机_主题Agent.png", "Signals 手机端主题 Agent", "八个主题 Agent 每天扫描全球公开新闻。"),
+    (3, "Signals手机日期单卡", "mobile", "M08_Signals手机_日期单卡浏览.png", "Signals 手机端按日期单卡浏览", "选择主题与日期，一次只看一张可左右滑动的新闻卡。"),
     (4, "Gonka重要性排序", "concept", "signal_receipt", "Gonka 筛选概念", "第一道 Gonka 筛选，只判断一条信息是否值得关注。"),
     (4, "Signals手机筛选回执", "mobile", "M07_Signals手机_Gonka情报卡.png", "Signals 手机端 Gonka 情报卡", "它保留上游请求回执，但重要性绝不冒充真实度。"),
     (5, "Signals汇入Relay", "concept", "handoff", "用户控制的流转链", "候选信号不会自动进入知识星球。"),
@@ -80,8 +80,8 @@ FRAME_PLAN = [
     (7, "TruthScore确定性公式", "concept", "score", "确定性评分公式", "分数来自可测试代码，而不是由模型随口给分。"),
     (8, "越界来源编号被拒绝", "focus", ("06_真实结果_02_来源.png", (0.31, 0.33, 0.99, 0.99)), "来源编号校验", "模型只能引用账本中真实存在的来源编号。"),
     (8, "分歧与信任边界", "concept", "safety", "信任边界概念图", "无效编号会被拒绝，两个模型的分歧也会原样保留。"),
-    (9, "EvidenceCouncil四方职责", "concept", "council", "Council 四角色概念", "Evidence Council 不是一群重复回答的聊天机器人。"),
-    (9, "Council手机四方审理", "mobile", "M03_Council手机_四方审理.png", "Evidence Council 手机端", "记录、调查、质疑和人工确认，被拆成四个清晰责任。"),
+    (9, "FactRelay主Agent六子Agent", "desktop", "agent_architecture_desktop.png", "主 Agent、六个子 Agent 与 Skills", "FactRelay 主 Agent 编排六个边界清晰的子 Agent。"),
+    (9, "Agent编排手机卡片链", "mobile", "agent_architecture_mobile.png", "手机端可滑动 Agent 卡片链", "受理、证据、调查、质疑、裁决和回执逐步交接。"),
     (10, "Kimi桌面调查卡", "desktop", "D04_Council桌面_Kimi调查方.png", "真实 Kimi 卡片", "Kimi-K2.6 担任调查方。"),
     (10, "Kimi证据判断近景", "focus", ("07_真实结果_03_双模型审查.png", (0.32, 0.26, 0.67, 0.99)), "Kimi 调查方推理", "它先形成一份基于编号证据的调查判断。"),
     (11, "MiniMax手机审查界面", "mobile", "M03_Council手机_四方审理.png", "MiniMax 手机端审查", "MiniMax-M2.7 担任对抗式质疑方。"),
@@ -324,14 +324,14 @@ def configure_doc(doc: Document) -> None:
     section.footer_distance = Inches(0.492)
 
     normal = doc.styles["Normal"]
-    normal.font.name = "Source Han Sans CN"
+    normal.font.name = "STHeiti"
     normal.font.size = Pt(10.5)
     normal.font.color.rgb = RGBColor.from_string("11120F")
     normal.paragraph_format.space_before = Pt(0)
     normal.paragraph_format.space_after = Pt(6)
     normal.paragraph_format.line_spacing = 1.25
     for key in ("w:ascii", "w:hAnsi", "w:eastAsia", "w:cs"):
-        normal._element.rPr.rFonts.set(qn(key), "Source Han Sans CN")
+        normal._element.rPr.rFonts.set(qn(key), "STHeiti")
 
     for name, size, color, before, after in (
         ("Title", 26, "11120F", 0, 6),
@@ -340,7 +340,7 @@ def configure_doc(doc: Document) -> None:
         ("Heading 3", 12, "3C49DA", 10, 5),
     ):
         style = doc.styles[name]
-        style.font.name = "Source Han Sans CN"
+        style.font.name = "STHeiti"
         style.font.size = Pt(size)
         style.font.bold = True
         style.font.color.rgb = RGBColor.from_string(color)
@@ -348,13 +348,13 @@ def configure_doc(doc: Document) -> None:
         style.paragraph_format.space_after = Pt(after)
         style.paragraph_format.keep_with_next = True
         for key in ("w:ascii", "w:hAnsi", "w:eastAsia", "w:cs"):
-            style._element.rPr.rFonts.set(qn(key), "Source Han Sans CN")
+            style._element.rPr.rFonts.set(qn(key), "STHeiti")
 
     header = section.header.paragraphs[0]
-    set_font(header.add_run("FACT ATLAS  /  36-SHOT NARRATION VISUAL PACK  ·  36 镜头口播画面包"), 7.5, True, "5F645E", "Source Han Sans CN")
+    set_font(header.add_run("FACT ATLAS  /  36-SHOT NARRATION VISUAL PACK  ·  36 镜头口播画面包"), 7.5, True, "5F645E", "STHeiti")
     footer = section.footer.paragraphs[0]
     footer.alignment = WD_ALIGN_PARAGRAPH.RIGHT
-    set_font(footer.add_run("AI³ GROWTH HACKATHON 2026   ·   "), 7.5, True, "5F645E", "Source Han Sans CN")
+    set_font(footer.add_run("AI³ GROWTH HACKATHON 2026   ·   "), 7.5, True, "5F645E", "STHeiti")
     add_field(footer, "PAGE")
 
     doc.core_properties.title = "Fact Atlas 36 镜头口播画面对应表"
@@ -373,7 +373,7 @@ def add_summary_table(doc: Document, rows: list[dict[str, str]]) -> None:
         p = cell.paragraphs[0]
         p.alignment = WD_ALIGN_PARAGRAPH.CENTER
         p.paragraph_format.space_after = Pt(0)
-        set_font(p.add_run(label), 8, True, "FFFFFF", "Source Han Sans CN")
+        set_font(p.add_run(label), 8, True, "FFFFFF", "STHeiti")
     set_repeat_header(table.rows[0])
     for index, row in enumerate(rows):
         cells = table.add_row().cells
@@ -388,7 +388,7 @@ def add_summary_table(doc: Document, rows: list[dict[str, str]]) -> None:
             p.paragraph_format.line_spacing = 1.12
             if cell in (cells[0], cells[1]):
                 p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-            set_font(p.add_run(value), 7.6 if cell != cells[3] else 7.2, cell == cells[0], "11120F", "Source Han Sans CN")
+            set_font(p.add_run(value), 7.6 if cell != cells[3] else 7.2, cell == cells[0], "11120F", "STHeiti")
     set_table_geometry(table, [620, 1160, 2360, 5220])
 
 
@@ -397,12 +397,12 @@ def build_docx(path: Path, frame_paths: list[Path], rows: list[dict[str, str]]) 
     configure_doc(doc)
     kicker = doc.add_paragraph()
     kicker.paragraph_format.space_after = Pt(6)
-    set_font(kicker.add_run("AI³ GROWTH HACKATHON 2026  ·  EDITING HANDOFF"), 8.5, True, word_color(VIOLET), "Source Han Sans CN")
+    set_font(kicker.add_run("AI³ GROWTH HACKATHON 2026  ·  EDITING HANDOFF"), 8.5, True, word_color(VIOLET), "STHeiti")
     title = doc.add_paragraph(style="Title")
-    set_font(title.add_run("Fact Atlas 36 镜头口播画面对应表"), 26, True, "11120F", "Source Han Sans CN")
+    set_font(title.add_run("Fact Atlas 36 镜头口播画面对应表"), 26, True, "11120F", "STHeiti")
     subtitle = doc.add_paragraph()
     subtitle.paragraph_format.space_after = Pt(12)
-    set_font(subtitle.add_run("150-second narration → 36 editing-ready visuals / 150 秒口播 → 36 张可直接剪辑画面"), 11, True, "5F645E", "Source Han Sans CN")
+    set_font(subtitle.add_run("150-second narration → 36 editing-ready visuals / 150 秒口播 → 36 张可直接剪辑画面"), 11, True, "5F645E", "STHeiti")
 
     metrics = doc.add_table(rows=1, cols=4)
     metrics.style = "Table Grid"
@@ -416,8 +416,8 @@ def build_docx(path: Path, frame_paths: list[Path], rows: list[dict[str, str]]) 
         p = cell.paragraphs[0]
         p.alignment = WD_ALIGN_PARAGRAPH.CENTER
         p.paragraph_format.space_after = Pt(0)
-        set_font(p.add_run(value + "\n"), 13, True, "11120F", "Source Han Sans CN")
-        set_font(p.add_run(label), 8, True, "5F645E", "Source Han Sans CN")
+        set_font(p.add_run(value + "\n"), 13, True, "11120F", "STHeiti")
+        set_font(p.add_run(label), 8, True, "5F645E", "STHeiti")
     set_table_geometry(metrics, [2340, 2340, 2340, 2340])
 
     doc.add_paragraph()
@@ -426,8 +426,8 @@ def build_docx(path: Path, frame_paths: list[Path], rows: list[dict[str, str]]) 
     shade(note.cell(0, 0), "11120F")
     p = note.cell(0, 0).paragraphs[0]
     p.paragraph_format.space_after = Pt(0)
-    set_font(p.add_run("使用方法 / EDITOR NOTE\n"), 8, True, word_color(LIME), "Source Han Sans CN")
-    set_font(p.add_run("你按现有 19 句中文口播母稿录音即可。同一句内的两张图已均分时间，剪辑时按本表时间码切换；真人语速有轻微偏差时，以“口播切点”短句为对齐锚点。"), 10, False, "FFFFFF", "Source Han Sans CN")
+    set_font(p.add_run("使用方法 / EDITOR NOTE\n"), 8, True, word_color(LIME), "STHeiti")
+    set_font(p.add_run("你按现有 19 句中文口播母稿录音即可。同一句内的两张图已均分时间，剪辑时按本表时间码切换；真人语速有轻微偏差时，以“口播切点”短句为对齐锚点。"), 10, False, "FFFFFF", "STHeiti")
     set_table_geometry(note, [9360])
 
     doc.add_section(WD_SECTION.NEW_PAGE)
@@ -442,8 +442,8 @@ def build_docx(path: Path, frame_paths: list[Path], rows: list[dict[str, str]]) 
             heading.paragraph_format.space_before = Pt(2 if offset == 0 else 12)
             heading.paragraph_format.space_after = Pt(6)
             heading.paragraph_format.keep_with_next = True
-            set_font(heading.add_run(f"{item_index + 1:02d}  "), 13, True, word_color(VIOLET), "Source Han Sans CN")
-            set_font(heading.add_run(f"{row['start']} → {row['end']}  ·  {row['slug']}"), 11.5, True, "11120F", "Source Han Sans CN")
+            set_font(heading.add_run(f"{item_index + 1:02d}  "), 13, True, word_color(VIOLET), "STHeiti")
+            set_font(heading.add_run(f"{row['start']} → {row['end']}  ·  {row['slug']}"), 11.5, True, "11120F", "STHeiti")
 
             table = doc.add_table(rows=1, cols=2)
             table.style = "Table Grid"
@@ -460,16 +460,16 @@ def build_docx(path: Path, frame_paths: list[Path], rows: list[dict[str, str]]) 
 
             p = right.paragraphs[0]
             p.paragraph_format.space_after = Pt(4)
-            set_font(p.add_run("画面用途 / VISUAL\n"), 7.8, True, word_color(VIOLET), "Source Han Sans CN")
-            set_font(p.add_run(row["purpose"]), 10.2, True, "11120F", "Source Han Sans CN")
+            set_font(p.add_run("画面用途 / VISUAL\n"), 7.8, True, word_color(VIOLET), "STHeiti")
+            set_font(p.add_run(row["purpose"]), 10.2, True, "11120F", "STHeiti")
             p2 = right.add_paragraph()
             p2.paragraph_format.space_after = Pt(4)
-            set_font(p2.add_run("口播切点 / SWITCH CUE\n"), 7.8, True, word_color(VIOLET), "Source Han Sans CN")
-            set_font(p2.add_run(row["phrase"]), 9.5, False, "11120F", "Source Han Sans CN")
+            set_font(p2.add_run("口播切点 / SWITCH CUE\n"), 7.8, True, word_color(VIOLET), "STHeiti")
+            set_font(p2.add_run(row["phrase"]), 9.5, False, "11120F", "STHeiti")
             p3 = right.add_paragraph()
             p3.paragraph_format.space_after = Pt(0)
-            set_font(p3.add_run("完整母句 / FULL LINE\n"), 7.8, True, word_color(VIOLET), "Source Han Sans CN")
-            set_font(p3.add_run(row["narration"]), 8.6, False, "3F413C", "Source Han Sans CN")
+            set_font(p3.add_run("完整母句 / FULL LINE\n"), 7.8, True, word_color(VIOLET), "STHeiti")
+            set_font(p3.add_run(row["narration"]), 8.6, False, "3F413C", "STHeiti")
             set_table_geometry(table, [4200, 5160])
     doc.save(path)
 
@@ -484,7 +484,7 @@ def write_mapping(rows: list[dict[str, str]]) -> None:
     lines = [
         "# Fact Atlas 36 镜头口播画面对应表",
         "",
-        "36 张 1920×1080 主画面覆盖 150 秒口播；其中 10 张是手机竖屏居中的响应式产品镜头，另保留 16 张桌面/手机公网原始实拍。",
+        "36 张 1920×1080 主画面覆盖 150 秒口播；其中 10 张是手机竖屏居中的响应式产品镜头，另保留 20 张桌面/手机公网原始实拍。",
         "",
         "| # | 时间码 | 文件 | 画面用途 | 口播切点 |",
         "| ---: | --- | --- | --- | --- |",
@@ -511,7 +511,7 @@ def write_readme() -> None:
 
 这个目录专门用于“先录口播，再合成视频”的工作流。
 
-- `00_真实界面原始截图`：16 张公网真实产品截图，包含桌面和手机端。
+- `00_真实界面原始截图`：20 张公网真实产品截图，包含桌面、手机端、日期单卡与 Agent 编排。
 - `01_按时间码排列_36张`：36 张 1920×1080 主画面，已按口播时间线排序；其中 10 张是手机竖屏居中、简洁手机外壳包装的响应式镜头。
 - `00_36镜头总览_4K.png`：6×6 总览，用于快速检查整体节奏和色彩。
 - `00_36镜头口播对应表.csv/.md`：机器可读和人工可读的时间轴。

@@ -35,19 +35,20 @@ OUT = DELIVERY / "05_逐句配图"
 PRIMARY = OUT / "01_逐句画面_19张"
 BONUS = OUT / "02_备用转场_4张"
 GONKA = OUT / "03_Gonka核心架构_4张"
+NEW_RAW = DELIVERY / "06_口播画面包_36张" / "00_真实界面原始截图"
 
 
 PLAN = [
     ("01_知识黑盒问题", None, "product", None, "三 Tab 产品开场与问题"),
     ("02_两条知识路径", None, "paths", None, "Relay 主动探索与 Signals 每日发现"),
     ("03_Relay三种输入", "04_实时核查进行中.png", "focus", (0.00, 0.00, 0.34, 0.62), "文本、链接、图片输入"),
-    ("04_八个Signals_Agent", None, "signals", None, "八个全球主题 Agent"),
+    ("04_Signals日期单卡Agent", None, "signals", None, "八主题、日期选择与单卡浏览"),
     ("05_重要性不是真实度", None, "signal_receipt", None, "Gonka 重要性排序与独立回执"),
     ("06_Signals汇入Relay", None, "handoff", None, "候选主张进入深度核验"),
     ("07_来源账本", "06_真实结果_02_来源.png", "focus", (0.20, 0.04, 0.99, 0.94), "来源、日期、立场与可信度"),
     ("08_确定性TruthScore", "05_真实结果_01_结论.png", "focus", (0.21, 0.03, 0.99, 0.91), "结论、Truth Score 与信心"),
     ("09_来源编号与分歧", "06_真实结果_02_来源.png", "focus", (0.31, 0.33, 0.99, 0.99), "越界来源被拒绝，分歧保留"),
-    ("10_EvidenceCouncil四方", None, "council", None, "记录、调查、质疑与人工门"),
+    ("10_FactRelay六子Agent", "agent_architecture_desktop.png", "new_focus", (0.00, 0.00, 1.00, 1.00), "主 Agent、六子 Agent 与 Skills"),
     ("11_Kimi调查方", "07_真实结果_03_双模型审查.png", "focus", (0.32, 0.26, 0.67, 0.99), "Kimi 调查方证据判断"),
     ("12_MiniMax质疑方", "07_真实结果_03_双模型审查.png", "focus", (0.60, 0.26, 0.94, 0.99), "MiniMax 对抗式质疑"),
     ("13_Gonka真实请求回执", "08_真实结果_04_Gonka回执.png", "focus", (0.20, 0.10, 0.99, 0.90), "Gonka Request ID 与执行顺序"),
@@ -130,7 +131,7 @@ def paths_frame() -> Image.Image:
 
 
 def signals_frame() -> Image.Image:
-    image, draw = base_frame("SIGNALS · EIGHT GLOBAL SCOUTS", "A daily brief, not an infinite feed.", "八个主题 Agent 扫描公开新闻，把广阔信息流压缩成可核验的候选主张。", True)
+    image, draw = base_frame("SIGNALS · DATED TOPIC AGENTS", "Pick a topic and date. Swipe one card.", "八个主题子 Agent 按日期抓取全球新闻；每次只呈现一张可核验候选卡。", True)
     topics = [("AI", "人工智能"), ("TECH", "科技"), ("FINANCE", "金融"), ("CLIMATE", "气候能源"), ("SCIENCE", "科学"), ("HEALTH", "健康生物"), ("CITIES", "城市文化"), ("POLICY", "公共政策")]
     colors = [LIME, CYAN, YELLOW, PINK, VIOLET, LIME, CYAN, YELLOW]
     for index, ((name, chinese), accent) in enumerate(zip(topics, colors)):
@@ -142,7 +143,7 @@ def signals_frame() -> Image.Image:
         draw.text((x1 + 42, y1 + 31), f"{index + 1:02d}", font=font(FONT_BOLD, 16), fill=BLACK)
         draw.text((x1 + 22, y1 + 92), name, font=font(FONT_BOLD, 29), fill=BLACK)
         draw.text((x1 + 22, y1 + 139), chinese, font=font(FONT_CN, 24), fill="#464842")
-        draw.text((x1 + 22, y1 + 192), "DAILY · PUBLIC NEWS", font=font(FONT_BOLD, 14), fill=VIOLET)
+        draw.text((x1 + 22, y1 + 192), "DATED · SWIPEABLE CARD", font=font(FONT_BOLD, 14), fill=VIOLET)
     return image
 
 
@@ -514,6 +515,8 @@ def main() -> None:
             image = full(SHOTS / source_name)
         elif mode == "focus":
             image = focus(SHOTS / source_name, box, accents[(index - 1) % len(accents)])
+        elif mode == "new_focus":
+            image = focus(NEW_RAW / source_name, box, accents[(index - 1) % len(accents)])
         elif mode == "product":
             image = product_frame()
         elif mode == "paths":
