@@ -52,6 +52,33 @@ describe("signal scout", () => {
     expect(result.agentSystem.skills.map((skill) => skill.id)).toContain("relay-handoff");
   });
 
+  it("retries one transient empty Gonka response with the same model and preserves the failed attempt", async () => {
+    let calls = 0;
+    const result = await getDailySignals("ai", "2026-07-15", { GONKA_API_KEY: "test" }, {
+      skipCache: true,
+      now: new Date("2026-07-15T12:00:00.000Z"),
+      searchNewsEvidence: async () => SOURCES,
+      callGonka: async (options) => {
+        calls += 1;
+        if (calls === 1) throw new Error("GonkaRouter returned an empty model response.");
+        return {
+          text: JSON.stringify({ brief: "Recovered", briefZh: "已恢复", signals: [{ sourceIndex: 1, importance: 88, claim: "A checkable claim about Alpha" }] }),
+          requestId: "gonka-retry-receipt",
+          model: options.model,
+          usage: { inputTokens: 1, outputTokens: 1 },
+          trace: { stage: options.purpose, provider: "GonkaRouter", model: options.model, requestId: "gonka-retry-receipt", startedAt: "2026-07-15T00:00:00.000Z", durationMs: 10, status: "complete" },
+        };
+      },
+    });
+
+    expect(calls).toBe(2);
+    expect(result.requestId).toBe("gonka-retry-receipt");
+    expect(result.trace.map((step) => [step.stage, step.status])).toEqual([
+      ["daily-signal-ranking", "partial"],
+      ["daily-signal-ranking-response-retry", "complete"],
+    ]);
+  });
+
   it("bounds the selectable archive to a deterministic 30-day window", () => {
     expect(resolveSignalDate("2026-07-01", new Date("2026-07-15T12:00:00.000Z"))).toMatchObject({
       selectedDate: "2026-07-01",

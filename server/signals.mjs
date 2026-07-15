@@ -151,7 +151,31 @@ function rankingMessages(topic, sources, calendar) {
 }
 
 async function callRankingJson(options, request, trace) {
-  const first = await request(options);
+  const firstStartedAt = new Date().toISOString();
+  const firstStarted = performance.now();
+  let first;
+  try {
+    first = await request(options);
+  } catch (error) {
+    if (error?.code === "GONKA_RATE_LIMITED" || error?.name === "AbortError") throw error;
+    trace.push({
+      stage: options.purpose,
+      provider: "GonkaRouter",
+      model: options.model,
+      requestId: null,
+      startedAt: firstStartedAt,
+      durationMs: Math.round(performance.now() - firstStarted),
+      status: "partial",
+    });
+    const retry = await request({
+      ...options,
+      purpose: `${options.purpose}-response-retry`,
+      temperature: 0,
+      messages: [...options.messages, { role: "user", content: "The previous Gonka attempt returned no usable response. Execute the same bounded task once more and return the requested strict JSON object only." }],
+    });
+    trace.push(retry.trace);
+    return { call: retry, parsed: parseJsonObject(retry.text) };
+  }
   try {
     const parsed = parseJsonObject(first.text);
     trace.push(first.trace);

@@ -211,7 +211,7 @@ npm run verify
 npm audit --audit-level=low
 ```
 
-`npm run verify` runs strict TypeScript checking, **40 unit tests across 10 files**, and the production build. `npm audit --audit-level=low` currently reports zero known vulnerabilities.
+`npm run verify` runs strict TypeScript checking, **41 unit tests across 10 files**, and the production build. `npm audit --audit-level=low` currently reports zero known vulnerabilities.
 
 ## API
 
