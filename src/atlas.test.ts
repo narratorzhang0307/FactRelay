@@ -19,6 +19,10 @@ class MemoryStorage {
   removeItem(key: string) { this.values.delete(key); }
 }
 
+class UnavailableStorage extends MemoryStorage {
+  setItem(): void { throw new Error("storage blocked"); }
+}
+
 function result(id: string, url = "https://example.com/source"): VerificationResult {
   return {
     id,
@@ -63,6 +67,11 @@ describe("Fact Atlas local model", () => {
     expect(loadAtlasNodes(storage)).toEqual([]);
     clearAtlas(storage);
     expect(storage.getItem(ATLAS_STORAGE_KEY)).toBeNull();
+  });
+
+  it("reports a failed write instead of pretending the fact was saved", () => {
+    expect(() => saveAtlasNode(result("fr_blocked"), null, new UnavailableStorage())).toThrow("Atlas storage is unavailable");
+    expect(() => saveAtlasNode(result("fr_missing"), null, null)).toThrow("Atlas storage is unavailable");
   });
 
   it("links only explainable shared evidence or nearby nodes", () => {

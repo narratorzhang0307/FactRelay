@@ -54,6 +54,7 @@ export function FactAtlas({ currentResult, onOpenResult }: Props) {
   const [candidates, setCandidates] = useState<GeocodeCandidate[]>([]);
   const [lookupBusy, setLookupBusy] = useState(false);
   const [lookupError, setLookupError] = useState("");
+  const [storageError, setStorageError] = useState("");
 
   useEffect(() => subscribeAtlas(() => setNodes(loadAtlasNodes())), []);
   useEffect(() => {
@@ -97,11 +98,27 @@ export function FactAtlas({ currentResult, onOpenResult }: Props) {
 
   const store = (placement: AtlasPlacement | null) => {
     if (!currentResult) return;
-    const node = saveAtlasNode(currentResult, placement);
-    setNodes(loadAtlasNodes());
-    setSelectedId(node.id);
-    if (placement) setCenterLng(placement.lng);
-    setCandidates([]);
+    try {
+      const node = saveAtlasNode(currentResult, placement);
+      setNodes(loadAtlasNodes());
+      setSelectedId(node.id);
+      setStorageError("");
+      if (placement) setCenterLng(placement.lng);
+      setCandidates([]);
+    } catch (error) {
+      setStorageError(error instanceof Error ? error.message : "Fact Atlas could not save this node. · 知识节点保存失败。");
+    }
+  };
+
+  const removeSelected = () => {
+    if (!selected) return;
+    try {
+      removeAtlasNode(selected.id);
+      setNodes(loadAtlasNodes());
+      setStorageError("");
+    } catch (error) {
+      setStorageError(error instanceof Error ? error.message : "Fact Atlas could not remove this node. · 知识节点删除失败。");
+    }
   };
 
   return (
@@ -118,6 +135,8 @@ export function FactAtlas({ currentResult, onOpenResult }: Props) {
           <div><strong>{links.length}</strong><span>Explainable links<br />可解释关系</span></div>
         </div>
       </header>
+
+      {storageError && <p className="atlas-storage-error" role="alert">{storageError}</p>}
 
       <div className="atlas-grid">
         <div className="atlas-globe-card">
@@ -188,7 +207,7 @@ export function FactAtlas({ currentResult, onOpenResult }: Props) {
                 </div>
                 <div className="atlas-node-actions">
                   <button type="button" onClick={() => onOpenResult(selected.result)}>Open evidence chain · 打开证据链</button>
-                  <button type="button" aria-label="Remove fact node · 删除事实节点" onClick={() => { removeAtlasNode(selected.id); setNodes(loadAtlasNodes()); }}><Trash2 size={15} /></button>
+                  <button type="button" aria-label="Remove fact node · 删除事实节点" onClick={removeSelected}><Trash2 size={15} /></button>
                 </div>
               </>
             ) : <p className="atlas-no-case">Your private Atlas is empty. Saving a fact stores its full evidence snapshot in this browser. · 你的私人知识星球还是空的；保存后，完整证据快照只留在当前浏览器。</p>}

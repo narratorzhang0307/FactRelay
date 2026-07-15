@@ -74,13 +74,14 @@ export function loadAtlasNodes(storage: StorageLike | null = browserStorage()): 
   }
 }
 
-function persistAtlasNodes(nodes: AtlasNode[], storage: StorageLike | null): void {
-  if (!storage) return;
+function persistAtlasNodes(nodes: AtlasNode[], storage: StorageLike | null): boolean {
+  if (!storage) return false;
   try {
     storage.setItem(ATLAS_STORAGE_KEY, JSON.stringify(nodes));
     listeners.forEach((listener) => listener());
+    return true;
   } catch {
-    // The current page still keeps its result if private-mode storage is unavailable.
+    return false;
   }
 }
 
@@ -98,12 +99,16 @@ export function saveAtlasNode(
     result,
   };
   const next = [node, ...loadAtlasNodes(storage).filter((existing) => existing.id !== node.id)];
-  persistAtlasNodes(next, storage);
+  if (!persistAtlasNodes(next, storage)) {
+    throw new Error("Atlas storage is unavailable. · 当前浏览器无法保存知识节点。");
+  }
   return node;
 }
 
 export function removeAtlasNode(id: string, storage: StorageLike | null = browserStorage()): void {
-  persistAtlasNodes(loadAtlasNodes(storage).filter((node) => node.id !== id), storage);
+  if (!persistAtlasNodes(loadAtlasNodes(storage).filter((node) => node.id !== id), storage)) {
+    throw new Error("Atlas storage is unavailable. · 当前浏览器无法更新知识节点。");
+  }
 }
 
 export function clearAtlas(storage: StorageLike | null = browserStorage()): void {
@@ -118,7 +123,14 @@ export function clearAtlas(storage: StorageLike | null = browserStorage()): void
 
 export function subscribeAtlas(listener: () => void): () => void {
   listeners.add(listener);
-  return () => listeners.delete(listener);
+  const onStorage = (event: StorageEvent) => {
+    if (event.key === ATLAS_STORAGE_KEY) listener();
+  };
+  if (typeof window !== "undefined") window.addEventListener("storage", onStorage);
+  return () => {
+    listeners.delete(listener);
+    if (typeof window !== "undefined") window.removeEventListener("storage", onStorage);
+  };
 }
 
 export const VERDICT_COLOR: Record<Verdict, string> = {
