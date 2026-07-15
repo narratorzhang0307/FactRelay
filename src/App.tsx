@@ -1,8 +1,9 @@
-import { ChevronLeft, ChevronRight, Github, Globe2, Network, Radio, ShieldCheck } from "lucide-react";
+import { Archive, ChevronLeft, ChevronRight, FileSearch, Gavel, Github, Globe2, Radio } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { ClaimComposer } from "./components/ClaimComposer";
 import { ResultView } from "./components/ResultView";
 import { FactAtlas } from "./components/FactAtlas";
+import { EvidenceCouncil } from "./components/EvidenceCouncil";
 import type { ApiError, HealthStatus, InputKind, VerificationResult } from "./types";
 
 async function getJson<T>(response: Response): Promise<T> {
@@ -44,6 +45,8 @@ const HERO_BLOCKS = [
   },
 ] as const;
 
+type ProductView = "relay" | "atlas" | "council";
+
 export default function App() {
   const [kind, setKind] = useState<InputKind>("text");
   const [content, setContent] = useState("");
@@ -54,6 +57,7 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [heroBlockIndex, setHeroBlockIndex] = useState(1);
+  const [activeView, setActiveView] = useState<ProductView>("relay");
   const heroTouchStartX = useRef<number | null>(null);
   const heroBlock = HERO_BLOCKS[heroBlockIndex];
 
@@ -101,29 +105,30 @@ export default function App() {
     <div className="app-shell">
       <div className="product-frame">
         <header className="site-header">
-          <a className="brand" href="#top" aria-label="FactRelay home">
-            <span className="brand-mark"><Network size={19} /></span>
-            <span>FactRelay</span>
+          <a className="brand" href="#top" aria-label="Fact Atlas home" onClick={() => setActiveView("relay")}>
+            <span className="brand-mark"><Globe2 size={19} /></span>
+            <span className="brand-copy"><strong>Fact Atlas</strong><small>知识星球 · powered by FactRelay</small></span>
           </a>
-          <div className="header-status" aria-label="Network status">
-            <span className={health?.liveReady ? "pulse-dot connected" : "pulse-dot"} />
-            {health?.liveReady ? "Gonka live · 已连接" : "Preview · 预览"}
-          </div>
+          <nav className="product-nav" aria-label="Product views · 产品视图">
+            <button type="button" className={activeView === "relay" ? "active" : ""} onClick={() => setActiveView("relay")}><FileSearch size={14} /><span>Relay<small>核验</small></span></button>
+            <button type="button" className={activeView === "atlas" ? "active" : ""} onClick={() => setActiveView("atlas")}><Globe2 size={14} /><span>Atlas<small>星图</small></span></button>
+            <button type="button" className={activeView === "council" ? "active" : ""} onClick={() => setActiveView("council")}><Gavel size={14} /><span>Council<small>法庭</small></span></button>
+          </nav>
           <div className="header-meta">
-            <span><ShieldCheck size={15} /> Auditable by design · 可审计设计</span>
-            <a href="#atlas"><Globe2 size={16} /> <span>Fact Atlas · 事实星图</span></a>
+            <span className="header-status" aria-label="Network status"><i className={health?.liveReady ? "pulse-dot connected" : "pulse-dot"} />{health?.liveReady ? "Gonka live · 已连接" : "Preview · 预览"}</span>
             <a href="https://github.com/narratorzhang0307/FactRelay" target="_blank" rel="noreferrer">
               <Github size={16} /> <span>GitHub</span>
             </a>
           </div>
         </header>
 
-        <main id="top">
+        <main id="top" className={`view-${activeView}`}>
+          {activeView === "relay" && <>
           <section className="hero">
             <div className="hero-copy">
-              <span className="hero-eyebrow"><Radio size={14} /> Case intelligence on Gonka · Gonka 事实核查</span>
-              <h1>Question the claim.<br /><em>Keep the receipts.</em></h1>
-              <p className="hero-cn">质疑主张，保留每一张推理回执。</p>
+              <span className="hero-eyebrow"><Radio size={14} /> FactRelay engine on Gonka · Gonka 事实中继</span>
+              <h1>Build a knowledge world.<br /><em>Every fact keeps receipts.</em></h1>
+              <p className="hero-cn">做一张可验证的个人知识地图，让每条事实保留推理回执。</p>
               <p>
                 One public claim enters. Independent evidence, two adversarial models, and a replayable
                 inference trail come back.
@@ -249,21 +254,36 @@ export default function App() {
                   </div>
                 </div>
               )}
-              {!loading && result && <ResultView result={result} />}
+              {!loading && result && <>
+                <ResultView result={result} />
+                <div className="result-next-actions">
+                  <button type="button" onClick={() => setActiveView("atlas")}><Archive size={16} /><span>Place in Fact Atlas<small>写入知识星球</small></span></button>
+                  <button type="button" onClick={() => setActiveView("council")}><Gavel size={16} /><span>Open Evidence Council<small>查看证据法庭</small></span></button>
+                </div>
+              </>}
             </div>
           </section>
+          </>}
 
-          <FactAtlas
+          {activeView === "atlas" && <FactAtlas
             currentResult={result}
             onOpenResult={(atlasResult) => {
               setResult(atlasResult);
+              setActiveView("relay");
               window.setTimeout(() => document.querySelector("[data-testid='result-view']")?.scrollIntoView({ behavior: "smooth", block: "start" }), 40);
             }}
-          />
+          />}
+          {activeView === "council" && <EvidenceCouncil result={result} onGoRelay={() => setActiveView("relay")} onGoAtlas={() => setActiveView("atlas")} />}
         </main>
 
+        <nav className="mobile-tabbar" aria-label="Mobile product tabs · 手机端产品标签">
+          <button type="button" className={activeView === "relay" ? "active" : ""} onClick={() => setActiveView("relay")}><FileSearch size={20} /><span>Relay<small>核验</small></span></button>
+          <button type="button" className={activeView === "atlas" ? "active" : ""} onClick={() => setActiveView("atlas")}><Globe2 size={22} /><span>Atlas<small>星图</small></span></button>
+          <button type="button" className={activeView === "council" ? "active" : ""} onClick={() => setActiveView("council")}><Gavel size={20} /><span>Council<small>法庭</small></span></button>
+        </nav>
+
         <footer>
-          <span>FactRelay · AI³ Growth Hackathon 2026 · AI³ Growth 黑客松</span>
+          <span>Fact Atlas · Knowledge planet powered by FactRelay · 知识星球</span>
           <span>AI inference exclusively through GonkaRouter · AI 推理仅通过 GonkaRouter</span>
         </footer>
       </div>

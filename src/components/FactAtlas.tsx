@@ -1,5 +1,5 @@
 import { Check, ChevronLeft, ChevronRight, ExternalLink, Globe2, MapPin, Orbit, Search, Trash2 } from "lucide-react";
-import { useEffect, useMemo, useState, type CSSProperties } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   buildAtlasLinks,
   loadAtlasNodes,
@@ -33,6 +33,13 @@ const VERDICT_LABEL = {
   mixed: "Mixed · 证据混合",
   insufficient: "Insufficient · 证据不足",
 } as const;
+
+const ORBIT_POSITIONS = [
+  { left: "12%", top: "20%" },
+  { left: "80%", top: "16%" },
+  { left: "85%", top: "70%" },
+  { left: "14%", top: "76%" },
+] as const;
 
 function shortPlace(label: string): string {
   return label.split(",").slice(0, 2).join(", ").slice(0, 48);
@@ -105,9 +112,9 @@ export function FactAtlas({ currentResult, onOpenResult }: Props) {
     <section className="atlas-section" id="atlas" aria-labelledby="atlas-title">
       <header className="atlas-heading">
         <div>
-          <span className="hero-eyebrow"><Orbit size={14} /> Fact Atlas · 事实星图</span>
+          <span className="hero-eyebrow"><Orbit size={14} /> Fact Atlas · 知识星球</span>
           <h2 id="atlas-title">Verify a claim. <em>Place only what survives.</em></h2>
-          <p>FactRelay turns verified claims into a private spatial knowledge lineage—without inventing a location. · 把核验后的主张变成私人空间知识谱系，但绝不虚构坐标。</p>
+          <p>FactRelay turns verified claims into a private spatial knowledge lineage—without inventing a location. · 把核验后的主张变成可验证的个人知识地图，但绝不虚构坐标。</p>
         </div>
         <div className="atlas-stats" aria-label="Fact Atlas statistics">
           <div><strong>{nodes.length}</strong><span>Saved facts<br />已存事实</span></div>
@@ -179,7 +186,7 @@ export function FactAtlas({ currentResult, onOpenResult }: Props) {
             {unplaced.length > 0 && (
               <div className="atlas-orbit" aria-label="Unplaced facts · 未落位事实">
                 {unplaced.slice(0, 4).map((node, index) => (
-                  <button key={node.id} type="button" style={{ "--orbit-index": index } as CSSProperties} onClick={() => setSelectedId(node.id)} title={node.result.claim}>
+                  <button key={node.id} type="button" style={ORBIT_POSITIONS[index]} onClick={() => setSelectedId(node.id)} title={node.result.claim}>
                     {node.result.truthScore}
                   </button>
                 ))}
@@ -195,7 +202,7 @@ export function FactAtlas({ currentResult, onOpenResult }: Props) {
         <div className="atlas-side">
           <article className="atlas-save-card">
             <span className="block-stamp"><span>NEW NODE · 新节点</span><code>{currentResult ? currentResult.id.slice(-10).toUpperCase() : "NO CASE"}</code></span>
-            <h3>{currentSaved ? "This case is in your Atlas." : "Place the current case."}<small>{currentSaved ? "当前案例已进入事实星图。" : "把当前核验结果放入星图。"}</small></h3>
+            <h3>{currentSaved ? "This case is in your Atlas." : "Place the current case."}<small>{currentSaved ? "当前案例已进入知识星球。" : "把当前核验结果放入知识星球。"}</small></h3>
             {currentResult ? (
               <>
                 <p className="atlas-current-claim">{currentResult.claim}</p>
@@ -232,7 +239,7 @@ export function FactAtlas({ currentResult, onOpenResult }: Props) {
                   <button type="button" aria-label="Remove fact node · 删除事实节点" onClick={() => { removeAtlasNode(selected.id); setNodes(loadAtlasNodes()); }}><Trash2 size={15} /></button>
                 </div>
               </>
-            ) : <p className="atlas-no-case">Your private Atlas is empty. Saving a fact stores its full evidence snapshot in this browser. · 你的私人星图还是空的；保存后，完整证据快照只留在当前浏览器。</p>}
+            ) : <p className="atlas-no-case">Your private Atlas is empty. Saving a fact stores its full evidence snapshot in this browser. · 你的私人知识星球还是空的；保存后，完整证据快照只留在当前浏览器。</p>}
           </article>
         </div>
       </div>
