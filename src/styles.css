@@ -837,7 +837,7 @@ main { width: 100%; }
 .atlas-globe-wrap { min-height: 630px; position: relative; display: grid; place-items: center; overflow: hidden; background: radial-gradient(circle at 50% 45%, rgba(120,101,255,.16), transparent 54%); }
 .atlas-mapbox-stage, .atlas-mapbox-canvas { position: absolute; inset: 0; }
 .atlas-mapbox-stage { overflow: hidden; background: radial-gradient(circle at 50% 44%, #252829 0, #101311 52%, #090a08 100%); }
-.atlas-mapbox-canvas { z-index: 1; }
+.atlas-mapbox-canvas.mapboxgl-map { width: 100%; height: 100%; position: absolute; z-index: 1; }
 .atlas-mapbox-stage .mapboxgl-canvas { outline: none; }
 .atlas-mapbox-stage .mapboxgl-ctrl-bottom-right { z-index: 8; opacity: .66; }
 .atlas-mapbox-stage .mapboxgl-ctrl-attrib { border: 1px solid rgba(255,255,255,.14); border-radius: 8px 0 0; background: rgba(9,10,8,.72); color: rgba(255,255,255,.7); font-size: 8px; backdrop-filter: blur(10px); }
