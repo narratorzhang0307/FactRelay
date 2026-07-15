@@ -226,13 +226,14 @@ export function SignalDesk({ onInvestigate }: Props) {
 
           {activeSignal && brief ? (
             <div className="signal-deck-stage">
+              <p className="visually-hidden" aria-live="polite">Signal {activeSignalIndex + 1} of {signals.length}: {activeSignal.headline} · 第 {activeSignalIndex + 1} 条，共 {signals.length} 条</p>
               <button className="signal-deck-arrow previous" type="button" onClick={() => moveSignal(-1)} disabled={signals.length < 2} aria-label="Previous signal · 上一条"><ChevronLeft size={25} /></button>
-              <div className="signal-deck-stack" data-position={`${activeSignalIndex + 1}-${signals.length}`} aria-live="polite">
+              <div className="signal-deck-stack" data-position={`${activeSignalIndex + 1}-${signals.length}`} role="group" aria-roledescription="carousel · 卡片轮播">
                 <article
                   className="signal-card signal-card-active"
                   key={activeSignal.id}
                   tabIndex={0}
-                  aria-label={`Signal ${activeSignalIndex + 1} of ${signals.length}`}
+                  aria-labelledby={`signal-${activeSignal.id}-headline`}
                   onKeyDown={(event) => {
                     if (event.key === "ArrowLeft") moveSignal(-1);
                     if (event.key === "ArrowRight") moveSignal(1);
@@ -246,14 +247,14 @@ export function SignalDesk({ onInvestigate }: Props) {
                   }}
                 >
                   <div className={activeSignal.source.imageUrl ? "signal-image" : "signal-image signal-image-empty"}>
-                    {activeSignal.source.imageUrl ? <img src={activeSignal.source.imageUrl} alt="" loading="lazy" referrerPolicy="no-referrer" /> : <><RadioTower size={28} /><span>{brief.topicLabel}<small>{brief.topicLabelZh}</small></span></>}
+                    {activeSignal.source.imageUrl ? <img src={activeSignal.source.imageUrl} alt="" loading="eager" decoding="async" referrerPolicy="no-referrer" /> : <><RadioTower size={28} /><span>{brief.topicLabel}<small>{brief.topicLabelZh}</small></span></>}
                     <b>{activeSignal.source.publisher}</b>
                     <time>{brief.calendar.selectedDate} · UTC EDITION</time>
                   </div>
                   <div className="signal-index"><span>BLOCK {String(activeSignalIndex + 1).padStart(2, "0")}</span><strong>{activeSignal.importance}</strong><small>IMPORTANCE<br />重要性</small></div>
                   <div className="signal-copy">
                     <div className="signal-source"><Newspaper size={14} /><span>{activeSignal.source.publisher}</span><time>{readableDate(activeSignal.source.publishedAt)}</time></div>
-                    <h3>{activeSignal.headline}<small>{activeSignal.headlineZh}</small></h3>
+                    <h3 id={`signal-${activeSignal.id}-headline`}>{activeSignal.headline}<small>{activeSignal.headlineZh}</small></h3>
                     <p>{activeSignal.why}<span>{activeSignal.whyZh}</span></p>
                     <div className="signal-claim"><b>CHECKABLE CLAIM · 待核验主张</b><span>{activeSignal.claim}</span><small>{activeSignal.claimZh}</small></div>
                     <div className="signal-actions"><button type="button" onClick={() => onInvestigate(activeSignal)}>Verify & add to Atlas · 核验后加入知识星球<ArrowRight size={15} /></button><a href={activeSignal.source.url} target="_blank" rel="noreferrer">Open source · 原文<ArrowUpRight size={14} /></a></div>
