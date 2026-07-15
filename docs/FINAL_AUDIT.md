@@ -1,10 +1,13 @@
-# FactRelay final submission audit / 最终提交审计
+# Fact Atlas final submission audit / 最终提交审计
 
 Audit date / 审计日期：**2026-07-15**  
 Target / 目标：AI³ Growth Hackathon 2026 · Track 3 — Gonka: AI for Society
 
 ## Product / 产品
 
+- [x] Mobile and desktop expose Relay, Atlas, and Signals as one coherent product.
+- [x] Relay contains both direct Verification and the four-role Evidence Council.
+- [x] Eight Signals topic agents rank current public news through Gonka; importance is never labeled truth.
 - [x] Text, public URL, and PNG/JPEG/WebP input paths are present.
 - [x] All semantic inference routes through GonkaRouter.
 - [x] Kimi-K2.6 and MiniMax-M2.7 have distinct investigator/skeptic roles.
@@ -13,6 +16,8 @@ Target / 目标：AI³ Growth Hackathon 2026 · Track 3 — Gonka: AI for Societ
 - [x] Gonka upstream request IDs are preserved unchanged.
 - [x] Preview mode labels itself and keeps request IDs null.
 - [x] One structured retry handles intermittent malformed JSON without hiding the failed call.
+- [x] Mapbox dark globe, bright verdict nodes, and browser-local storage are integrated.
+- [x] Coordinates require explicit user confirmation; unverifiable locations remain unplaced.
 
 ## Security and reliability / 安全与可靠性
 
@@ -20,7 +25,7 @@ Target / 目标：AI³ Growth Hackathon 2026 · Track 3 — Gonka: AI for Societ
 - [x] Remote pages, evidence excerpts, and previous model drafts are labeled untrusted in prompts.
 - [x] API key remains server-side, ignored by Git, and absent from `/api/health`.
 - [x] Images are type-allowlisted and size-bounded.
-- [x] `npm run verify`: TypeScript clean, 19/19 tests pass, production client and Worker build pass.
+- [x] `npm run verify`: TypeScript clean, 34/34 tests across 9 files pass, production client and Worker build pass.
 - [x] `npm audit --audit-level=low`: zero known vulnerabilities.
 
 ## Production / 生产部署
@@ -29,7 +34,8 @@ Target / 目标：AI³ Growth Hackathon 2026 · Track 3 — Gonka: AI for Societ
 - [x] Public smoke run: live mode, Refuted, Truth Score 18, confidence 88%, 5 sources.
 - [x] Both model cards contain non-null Gonka Request IDs.
 - [x] Public page browser console contains no errors.
-- [x] Desktop layout, card arrows, keyboard navigation, and mobile swipe handlers are present.
+- [x] Desktop layout, card arrows, keyboard navigation, mobile three-tab navigation, and touch-friendly Mapbox controls are present.
+- [x] Mobile Atlas has no horizontal overflow and the Mapbox canvas fills its 390px stage.
 
 ## Video / 视频
 

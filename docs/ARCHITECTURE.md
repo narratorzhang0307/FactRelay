@@ -1,4 +1,4 @@
-# FactRelay architecture and trust boundaries
+# Fact Atlas / FactRelay architecture and trust boundaries
 
 ## Product invariant
 
@@ -16,7 +16,9 @@ That produces four non-negotiable rules:
 ```mermaid
 flowchart TB
     subgraph Browser[Browser]
-        UI[React evidence workbench]
+        Relay[Relay verification + Evidence Council]
+        Atlas[Private browser-local Fact Atlas + Mapbox GL]
+        Signals[Topic Signal Agents]
     end
 
     subgraph Server[FactRelay Node server]
@@ -28,6 +30,9 @@ flowchart TB
         Normalize[JSON parser + source-index validator]
         Score[Deterministic Truth Score]
         Report[Evidence ledger + provenance trace]
+        Rank[Daily signal ranking]
+        Geocode[OpenStreetMap Nominatim candidates]
+        MapConfig[Public Mapbox configuration]
     end
 
     subgraph Gonka[GonkaRouter]
@@ -35,7 +40,7 @@ flowchart TB
         M2[MiniMaxAI/MiniMax-M2.7]
     end
 
-    UI --> Guard
+    Relay --> Guard
     Guard --> Extract
     Guard --> Retrieve
     Extract --> K2
@@ -48,10 +53,31 @@ flowchart TB
     Normalize --> Score
     Retrieve --> Score
     Score --> Report
-    Report --> UI
+    Report --> Relay
+    Relay --> Atlas
+    Signals --> Retrieve
+    Retrieve --> Rank
+    Rank --> K2
+    K2 --> Signals
+    Signals --> Relay
+    Atlas --> Geocode
+    Atlas --> MapConfig
 ```
 
 ## Request sequence
+
+### Daily topic signal
+
+```text
+topic agent
+  → current public-news retrieval
+  → Kimi importance ranking through GonkaRouter
+  → bilingual checkable-claim candidates + upstream request receipt
+  → user selection
+  → full FactRelay verification sequence below
+```
+
+The first-stage `importance` score is explicitly not a Truth Score. It prioritizes which items may deserve attention; it does not assert that the headline is true.
 
 ### Text claim
 
@@ -190,6 +216,15 @@ This layer does not call Gemini, OpenAI, local models, or any other inference pr
 - Text is bounded to 8,000 characters.
 - Images are restricted to PNG/JPEG/WebP and approximately 5 MB.
 - The API key never enters browser code or the health response.
+- `/api/map-config` exposes only a browser-safe Mapbox `pk.` public token; it never accepts or returns a secret Mapbox token.
+
+### Atlas placement and mapping
+
+- Nominatim returns deterministic place candidates; it does not decide which location is correct.
+- The user must click one candidate before coordinates are stored.
+- A claim may be saved without coordinates and remains visibly unplaced.
+- The browser stores the complete result snapshot locally; the hackathon build does not upload a private Atlas history.
+- Mapbox renders the dark basemap, bright verdict markers, and deterministic explainable links. It is a visualization layer, not an inference provider.
 
 ### FactRelay server → submitted URL
 
@@ -224,6 +259,8 @@ This layer does not call Gemini, OpenAI, local models, or any other inference pr
 - No blockchain write, token, or wallet. Gonka is the decentralized inference substrate; unrelated on-chain theater would not strengthen factual accuracy.
 - No hidden fallback to another AI provider.
 - No model-generated numeric score used as the final Truth Score.
+- No automatic publishing into the Atlas. Topic agents can suggest; only a user-confirmed, deeply verified claim may be stored.
+- No invented coordinates, random graph edges, or decorative map points.
 
 ## Local research influence
 
