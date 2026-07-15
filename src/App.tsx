@@ -5,6 +5,7 @@ import { ResultView } from "./components/ResultView";
 import { FactAtlas } from "./components/FactAtlas";
 import { SignalDesk } from "./components/SignalDesk";
 import { EvidenceCouncil } from "./components/EvidenceCouncil";
+import { PwaInstall } from "./components/PwaInstall";
 import type { ApiError, HealthStatus, InputKind, VerificationResult } from "./types";
 
 async function getJson<T>(response: Response): Promise<T> {
@@ -118,6 +119,7 @@ export default function App() {
           </nav>
           <div className="header-meta">
             <span className="header-status" aria-label="Network status"><i className={health?.liveReady ? "pulse-dot connected" : "pulse-dot"} />{health?.liveReady ? "Gonka live · 已连接" : "Preview · 预览"}</span>
+            <PwaInstall />
             <a href="https://github.com/narratorzhang0307/FactRelay" target="_blank" rel="noreferrer">
               <Github size={16} /> <span>GitHub</span>
             </a>

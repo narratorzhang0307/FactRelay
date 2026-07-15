@@ -148,6 +148,19 @@ a { color: inherit; }
   color: var(--white);
 }
 .header-meta a:hover { border-color: var(--lime); color: var(--lime); }
+.pwa-install-trigger { min-height: 36px; padding: 0 12px; display: inline-flex; align-items: center; gap: 7px; border: 1px solid var(--lime); border-radius: 999px; background: transparent; color: var(--lime); cursor: pointer; }
+.pwa-install-trigger > span { display: flex; flex-direction: column; font-size: 8px; font-weight: 850; line-height: 1; text-transform: uppercase; }
+.pwa-install-trigger small { margin-top: 2px; font-size: 6px; text-transform: none; }
+.pwa-install-trigger:hover { background: var(--lime); color: var(--black); }
+.pwa-install-help { width: min(390px, calc(100vw - 28px)); padding: 24px; position: fixed; right: 22px; top: 86px; z-index: 500; border: var(--hard-border); border-radius: 24px; background: var(--paper); box-shadow: 7px 7px 0 var(--violet); color: var(--black); }
+.pwa-help-close { width: 34px; height: 34px; display: grid; place-items: center; position: absolute; right: 12px; top: 12px; border: 1.5px solid var(--black); border-radius: 50%; background: var(--white); cursor: pointer; }
+.pwa-help-kicker { display: flex; align-items: center; gap: 7px; color: var(--violet); font-size: 8px; font-weight: 900; letter-spacing: .06em; }
+.pwa-install-help h2 { margin: 26px 0 18px; font-size: 28px; line-height: 1; letter-spacing: -.05em; }
+.pwa-install-help h2 small { margin-top: 7px; display: block; color: var(--muted); font-size: 12px; letter-spacing: 0; }
+.pwa-install-help p { margin: 0; padding: 15px; display: flex; align-items: flex-start; gap: 11px; border: 1.5px solid var(--black); border-radius: 15px; background: var(--lime); font-size: 10px; line-height: 1.45; }
+.pwa-install-help p > span { display: flex; flex-direction: column; }
+.pwa-install-help p small { margin-top: 5px; font-size: 8px; }
+.pwa-install-help em { margin-top: 15px; display: block; color: var(--muted); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 7px; font-style: normal; }
 
 main { width: 100%; }
 .view-atlas, .view-signals { min-height: calc(100vh - 152px); padding-top: 1px; }
@@ -1129,6 +1142,8 @@ footer {
   .product-nav { display: none; }
   .header-status { display: none !important; }
   .header-meta > span { display: none; }
+  .pwa-install-trigger > span { display: none; }
+  .pwa-install-trigger { width: 36px; padding: 0; justify-content: center; }
   .hero { padding: 44px 22px 33px; }
   .hero h1 { font-size: clamp(44px, 12vw, 70px); }
   .network-strip { grid-template-columns: 1fr auto; }
@@ -1178,6 +1193,7 @@ footer {
   .brand-mark { width: 34px; height: 34px; }
   .header-meta a { width: 35px; height: 35px; padding: 0; justify-content: center; }
   .header-meta a span { display: none; }
+  .pwa-install-help { right: 14px; top: 76px; }
   .hero { padding: 38px 16px 29px; }
   .relay-pane-tabs { width: calc(100% - 28px); margin-top: 12px; }
   .relay-pane-tabs button { min-width: 0; flex: 1; justify-content: center; padding: 0 9px; }

@@ -1,0 +1,38 @@
+{
+  "id": "/",
+  "name": "Fact Atlas · 知识星球",
+  "short_name": "Fact Atlas",
+  "description": "A verifiable personal knowledge map powered by FactRelay and GonkaRouter. · 基于 FactRelay 与 GonkaRouter 的可验证个人知识地图。",
+  "lang": "zh-CN",
+  "dir": "ltr",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#11120f",
+  "theme_color": "#b8ff5c",
+  "categories": ["news", "education", "productivity", "utilities"],
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "screenshots": [
+    {
+      "src": "/fact-atlas-og.png",
+      "sizes": "1731x909",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Fact Atlas verifiable knowledge world · 可验证知识星球"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Verify a claim · 核验主张",
+      "short_name": "FactRelay",
+      "url": "/#top",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
