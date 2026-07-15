@@ -93,10 +93,12 @@ export default function App() {
   const [health, setHealth] = useState<HealthStatus | null>(null);
   const [result, setResult] = useState<VerificationResult | null>(null);
   const [loading, setLoading] = useState(false);
+  const [verificationElapsed, setVerificationElapsed] = useState(0);
   const [error, setError] = useState("");
   const [heroBlockIndex, setHeroBlockIndex] = useState(1);
   const [productLocation, setProductLocation] = useState<ProductLocation>(() => parseProductHash(window.location.hash));
   const heroTouchStartX = useRef<number | null>(null);
+  const verificationAbortRef = useRef<AbortController | null>(null);
   const heroBlock = HERO_BLOCKS[heroBlockIndex];
   const { view: activeView, relayPane } = productLocation;
 
@@ -153,7 +155,23 @@ export default function App() {
     });
   }, []);
 
+  useEffect(() => {
+    if (!loading) {
+      setVerificationElapsed(0);
+      return;
+    }
+    const startedAt = Date.now();
+    const updateElapsed = () => setVerificationElapsed(Math.max(1, Math.round((Date.now() - startedAt) / 1000)));
+    updateElapsed();
+    const timer = window.setInterval(updateElapsed, 1000);
+    return () => window.clearInterval(timer);
+  }, [loading]);
+
+  useEffect(() => () => verificationAbortRef.current?.abort(), []);
+
   const runVerification = async () => {
+    const controller = new AbortController();
+    verificationAbortRef.current = controller;
     setLoading(true);
     setError("");
     try {
@@ -161,14 +179,23 @@ export default function App() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ kind, content, ...(kind === "image" ? { imageDataUrl } : {}) }),
+        signal: controller.signal,
       });
       setResult(await getJson<VerificationResult>(response));
       window.setTimeout(() => document.querySelector("[data-testid='result-view']")?.scrollIntoView({ behavior: "smooth", block: "start" }), 40);
     } catch (verificationError) {
+      if (controller.signal.aborted) return;
       setError(verificationError instanceof Error ? verificationError.message : "Verification failed. · 核查失败。");
     } finally {
+      if (verificationAbortRef.current === controller) verificationAbortRef.current = null;
       setLoading(false);
     }
+  };
+
+  const cancelVerification = () => {
+    verificationAbortRef.current?.abort();
+    verificationAbortRef.current = null;
+    setLoading(false);
   };
 
   return (
@@ -313,7 +340,7 @@ export default function App() {
                 onPreview={() => void loadPreview()}
               />
             </aside>
-            <div className="result-column">
+            <div className="result-column" aria-busy={loading}>
               {error && (
                 <div className="error-banner" role="alert">
                   <strong>Verification paused · 核查已暂停</strong>
@@ -328,6 +355,7 @@ export default function App() {
                     <span className="section-kicker">Live run in progress · 实时核查中</span>
                     <h2>Two models are testing the evidence. <span className="heading-zh">双模型正在审查证据。</span></h2>
                     <p>FactRelay is retrieving sources, running the investigator, then asking the skeptic to challenge it. · FactRelay 正在检索来源，先运行调查方，再由质疑方交叉检查。</p>
+                    <div className="loading-meta"><span>{verificationElapsed}s elapsed · 已用 {verificationElapsed} 秒</span><button type="button" onClick={cancelVerification}>Cancel · 取消</button></div>
                   </div>
                 </div>
               )}

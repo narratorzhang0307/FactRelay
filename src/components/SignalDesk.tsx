@@ -71,6 +71,7 @@ export function SignalDesk({ onInvestigate }: Props) {
   const [activeSignalIndex, setActiveSignalIndex] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [failedImageUrl, setFailedImageUrl] = useState<string | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
   const [bufferLayer, setBufferLayer] = useState<"memory" | "device" | "network" | null>(null);
   const touchStartX = useRef<number | null>(null);
@@ -129,6 +130,9 @@ export function SignalDesk({ onInvestigate }: Props) {
 
   const signals = brief?.signals || [];
   const activeSignal = signals[activeSignalIndex];
+  const activeImageUrl = activeSignal?.source.imageUrl || null;
+  const showActiveImage = Boolean(activeImageUrl && activeImageUrl !== failedImageUrl);
+  useEffect(() => setFailedImageUrl(null), [activeImageUrl]);
   const moveSignal = (direction: -1 | 1) => {
     if (signals.length < 2) return;
     setActiveSignalIndex((current) => (current + direction + signals.length) % signals.length);
@@ -246,8 +250,8 @@ export function SignalDesk({ onInvestigate }: Props) {
                     if (Math.abs(distance) > 44) moveSignal(distance > 0 ? -1 : 1);
                   }}
                 >
-                  <div className={activeSignal.source.imageUrl ? "signal-image" : "signal-image signal-image-empty"}>
-                    {activeSignal.source.imageUrl ? <img src={activeSignal.source.imageUrl} alt="" loading="eager" decoding="async" referrerPolicy="no-referrer" /> : <><RadioTower size={28} /><span>{brief.topicLabel}<small>{brief.topicLabelZh}</small></span></>}
+                  <div className={showActiveImage ? "signal-image" : "signal-image signal-image-empty"}>
+                    {showActiveImage ? <img src={activeImageUrl || ""} alt="" loading="eager" decoding="async" referrerPolicy="no-referrer" onError={() => setFailedImageUrl(activeImageUrl)} /> : <><RadioTower size={28} /><span>{brief.topicLabel}<small>{brief.topicLabelZh}</small></span></>}
                     <b>{activeSignal.source.publisher}</b>
                     <time>{brief.calendar.selectedDate} · UTC EDITION</time>
                   </div>
