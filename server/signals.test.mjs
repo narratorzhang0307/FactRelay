@@ -34,13 +34,16 @@ describe("signal scout", () => {
   it("prefers a validated OSS date bundle and preserves the original receipt", async () => {
     const date = "2026-07-15";
     const editions = Object.fromEntries(Object.keys(SIGNAL_TOPICS).map((topic) => [topic, getSignalSnapshot(topic, date)]));
+    let liveStarts = 0;
     const result = await getDailySignals("culture", date, { SIGNAL_CACHE_BASE_URL: "https://cache.example/fact-atlas/signals" }, {
       now: new Date("2026-07-16T12:00:00.000Z"),
       fetchImpl: async () => Response.json({ version: 1, date, editions }),
+      beforeLive: () => { liveStarts += 1; },
     });
     expect(result.cacheHit).toBe(true);
     expect(result.cacheLayer).toBe("oss");
     expect(result.requestId).toMatch(/^devshard-/);
+    expect(liveStarts).toBe(0);
   });
 
   it("returns isolated snapshot copies so request consumers cannot mutate the cache", async () => {
@@ -71,9 +74,11 @@ describe("signal scout", () => {
   });
 
   it("keeps Gonka receipt provenance on a live ranking", async () => {
+    let liveStarts = 0;
     const result = await getDailySignals("ai", "2026-07-15", { GONKA_API_KEY: "test" }, {
       skipCache: true,
       now: new Date("2026-07-15T12:00:00.000Z"),
+      beforeLive: () => { liveStarts += 1; },
       searchNewsEvidence: async () => SOURCES,
       callGonka: async (options) => ({
         text: JSON.stringify({ brief: "Brief", briefZh: "简报", signals: [{ sourceIndex: 2, importance: 87, headline: "Beta", headlineZh: "Beta", claim: "A checkable claim about Beta", claimZh: "关于 Beta 的可核验主张", why: "Material", whyZh: "重要" }] }),
@@ -89,6 +94,7 @@ describe("signal scout", () => {
     expect(result.calendar.selectedDate).toBe("2026-07-15");
     expect(result.agentSystem.topicAgent.id).toBe("ai-topic-agent");
     expect(result.agentSystem.skills.map((skill) => skill.id)).toContain("relay-handoff");
+    expect(liveStarts).toBe(1);
   });
 
   it("retries one transient empty Gonka response with the same model and preserves the failed attempt", async () => {

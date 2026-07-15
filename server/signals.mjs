@@ -209,10 +209,10 @@ export async function getDailySignals(topicId, rawDate = "", env = typeof proces
     const snapshot = getSignalSnapshot(topicId, calendar.selectedDate);
     if (snapshot) return snapshot;
   }
-  if (!env.GONKA_API_KEY) throw new GonkaError("Live signal ranking needs a GonkaRouter API key.", { status: 503, code: "GONKA_API_KEY_MISSING" });
-
   const cacheKey = `${calendar.selectedDate}:${topicId}:${env.KIMI_MODEL || DEFAULT_KIMI_MODEL}`;
   if (!runtime.skipCache && DAILY_CACHE.has(cacheKey)) return { ...DAILY_CACHE.get(cacheKey), cacheHit: true, cacheLayer: "memory" };
+  if (!env.GONKA_API_KEY) throw new GonkaError("Live signal ranking needs a GonkaRouter API key.", { status: 503, code: "GONKA_API_KEY_MISSING" });
+  if (runtime.beforeLive) await runtime.beforeLive();
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 90_000);

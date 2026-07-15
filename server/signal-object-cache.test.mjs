@@ -69,4 +69,40 @@ describe("Signals OSS object cache", () => {
     });
     expect(result).toBeNull();
   });
+
+  it("coalesces concurrent topic reads into one date-bundle request", async () => {
+    let calls = 0;
+    const fetchImpl = async () => {
+      calls += 1;
+      await Promise.resolve();
+      return Response.json(bundle("2026-07-16"));
+    };
+    const options = { now: new Date("2026-07-16T12:00:00.000Z"), skipMemory: true, fetchImpl };
+    const [ai, policy] = await Promise.all([
+      getSignalObjectCache("ai", "2026-07-16", { SIGNAL_CACHE_BASE_URL: "https://cache.example/signals" }, options),
+      getSignalObjectCache("policy", "2026-07-16", { SIGNAL_CACHE_BASE_URL: "https://cache.example/signals" }, options),
+    ]);
+    expect(calls).toBe(1);
+    expect(ai.topic).toBe("ai");
+    expect(policy.topic).toBe("policy");
+  });
+
+  it("rejects unsafe object roots and source links", async () => {
+    let calls = 0;
+    const blockedRoot = await getSignalObjectCache("ai", "2026-07-16", { SIGNAL_CACHE_BASE_URL: "http://cache.example/signals" }, {
+      now: new Date("2026-07-16T12:00:00.000Z"),
+      fetchImpl: async () => { calls += 1; return Response.json(bundle("2026-07-16")); },
+    });
+    expect(blockedRoot).toBeNull();
+    expect(calls).toBe(0);
+
+    const invalid = bundle("2026-07-16");
+    invalid.editions.ai.signals[0].source.url = "javascript:alert(1)";
+    const blockedSource = await getSignalObjectCache("ai", "2026-07-16", { SIGNAL_CACHE_BASE_URL: "https://cache.example/signals" }, {
+      now: new Date("2026-07-16T12:00:00.000Z"),
+      skipMemory: true,
+      fetchImpl: async () => Response.json(invalid),
+    });
+    expect(blockedSource).toBeNull();
+  });
 });

@@ -3,6 +3,31 @@ const CACHE_WINDOW_DAYS = 3;
 const CACHE_TTL_MS = 10 * 60 * 1000;
 const MAX_BUNDLE_BYTES = 5_000_000;
 const bundleMemory = new Map();
+const bundleRequests = new Map();
+
+function normalizeBaseUrl(value) {
+  try {
+    const url = new URL(String(value || "").trim());
+    const loopback = url.hostname === "localhost" || url.hostname === "127.0.0.1" || url.hostname === "[::1]";
+    if (url.protocol !== "https:" && !(url.protocol === "http:" && loopback)) return null;
+    if (url.username || url.password) return null;
+    url.search = "";
+    url.hash = "";
+    url.pathname = url.pathname.replace(/\/+$/, "");
+    return url.toString().replace(/\/$/, "");
+  } catch {
+    return null;
+  }
+}
+
+function isHttpUrl(value) {
+  try {
+    const url = new URL(value);
+    return (url.protocol === "https:" || url.protocol === "http:") && !url.username && !url.password;
+  } catch {
+    return false;
+  }
+}
 
 function isRecentDate(date, now) {
   const selected = Date.parse(`${date}T00:00:00.000Z`);
@@ -29,7 +54,7 @@ function isValidEdition(edition, topic, date) {
       && signal?.claimZh
       && signal?.why
       && signal?.whyZh
-      && signal?.source?.url);
+      && isHttpUrl(signal?.source?.url));
 }
 
 function isValidBundle(bundle, date) {
@@ -44,8 +69,31 @@ function rememberBundle(key, bundle, now) {
   while (bundleMemory.size > CACHE_WINDOW_DAYS) bundleMemory.delete(bundleMemory.keys().next().value);
 }
 
+async function fetchBundle(objectUrl, date, runtime, now) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), runtime.timeoutMs || 3_000);
+  try {
+    const response = await (runtime.fetchImpl || fetch)(objectUrl, {
+      headers: { Accept: "application/json" },
+      redirect: "error",
+      signal: controller.signal,
+    });
+    if (!response.ok || Number(response.headers.get("content-length") || 0) > MAX_BUNDLE_BYTES) return null;
+    const body = await response.text();
+    if (new TextEncoder().encode(body).byteLength > MAX_BUNDLE_BYTES) return null;
+    const bundle = JSON.parse(body);
+    if (!isValidBundle(bundle, date)) return null;
+    rememberBundle(objectUrl, bundle, now);
+    return bundle;
+  } catch {
+    return null;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 export async function getSignalObjectCache(topic, date, env = {}, runtime = {}) {
-  const baseUrl = String(env.SIGNAL_CACHE_BASE_URL || "").trim().replace(/\/$/, "");
+  const baseUrl = normalizeBaseUrl(env.SIGNAL_CACHE_BASE_URL);
   const now = runtime.now instanceof Date ? runtime.now : new Date();
   if (!baseUrl || !SIGNAL_CACHE_TOPICS.includes(topic) || !isRecentDate(date, now)) return null;
 
@@ -55,23 +103,15 @@ export async function getSignalObjectCache(topic, date, env = {}, runtime = {}) 
     return { ...structuredClone(remembered.bundle.editions[topic]), cacheHit: true, cacheLayer: "oss" };
   }
 
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), runtime.timeoutMs || 3_000);
-  try {
-    const response = await (runtime.fetchImpl || fetch)(objectUrl, {
-      headers: { Accept: "application/json" },
-      signal: controller.signal,
-    });
-    if (!response.ok || Number(response.headers.get("content-length") || 0) > MAX_BUNDLE_BYTES) return null;
-    const body = await response.text();
-    if (new TextEncoder().encode(body).byteLength > MAX_BUNDLE_BYTES) return null;
-    const bundle = JSON.parse(body);
-    if (!isValidBundle(bundle, date)) return null;
-    rememberBundle(objectUrl, bundle, now);
-    return { ...structuredClone(bundle.editions[topic]), cacheHit: true, cacheLayer: "oss" };
-  } catch {
-    return null;
-  } finally {
-    clearTimeout(timeout);
+  let request = bundleRequests.get(objectUrl);
+  if (!request) {
+    request = fetchBundle(objectUrl, date, runtime, now);
+    bundleRequests.set(objectUrl, request);
+    request.then(
+      () => bundleRequests.delete(objectUrl),
+      () => bundleRequests.delete(objectUrl),
+    );
   }
+  const bundle = await request;
+  return bundle ? { ...structuredClone(bundle.editions[topic]), cacheHit: true, cacheLayer: "oss" } : null;
 }
