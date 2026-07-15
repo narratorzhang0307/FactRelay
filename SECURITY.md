@@ -16,6 +16,7 @@ Please open a private GitHub security advisory for this repository. Do not inclu
 - Images are restricted by media type and size.
 - Model source indexes are validated before scoring.
 - Atlas history is browser-local and is not uploaded by the application server.
+- The OSS cache contains only validated public Signals editions. It never stores user claims, Atlas history, API keys, or OSS write credentials.
 - The service worker never caches `/api/*` responses.
 - Production listens on a loopback port and is exposed only through the dedicated Nginx virtual host.
 

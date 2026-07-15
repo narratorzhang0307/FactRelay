@@ -41,6 +41,7 @@ Create `/root/fact-atlas/.env` directly on the host and restrict it to the owner
 ```dotenv
 GONKA_API_KEY=replace-me
 MAPBOX_PUBLIC_TOKEN=pk.replace-me
+SIGNAL_CACHE_BASE_URL=https://last-night-on-earth.oss-cn-hangzhou.aliyuncs.com/fact-atlas/signals
 HOST=127.0.0.1
 PORT=3013
 ```
@@ -49,7 +50,7 @@ PORT=3013
 chmod 600 /root/fact-atlas/.env
 ```
 
-Never copy `.env` into a release archive, Git commit, Nginx file, browser bundle, or health response. `MAPBOX_PUBLIC_TOKEN` is designed for browser use; the Gonka key is not.
+Never copy `.env` into a release archive, Git commit, Nginx file, browser bundle, or health response. `MAPBOX_PUBLIC_TOKEN` is designed for browser use; the Gonka key is not. `SIGNAL_CACHE_BASE_URL` points only to public, read-only dated JSON; OSS write credentials never belong on this host.
 
 ## Application deployment
 

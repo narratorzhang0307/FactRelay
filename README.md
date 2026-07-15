@@ -470,10 +470,10 @@ Signals 解决的是个人知识库的“发现入口”：用户不必先知道
 
 ### 可复现快照
 
-冷启动新闻扫描和模型排序可能需要数十秒。同一日期重复生成也可能产生轻微差异。因此仓库支持把已经完整执行的 Gonka 版次保存为经过验证的不可变快照：
+冷启动新闻扫描和模型排序可能需要数十秒。同一日期重复生成也可能产生轻微差异。因此仓库支持把已经完整执行的 Gonka 版次保存为经过验证的不可变快照，并把最近三天的公开版次放到阿里云 OSS：
 
 ```text
-dated snapshot → process memory → live public scan + Gonka ranking
+Aliyun OSS date bundle → embedded snapshot → process memory → live public scan + Gonka ranking
 ```
 
 浏览器端还有一层独立的三日缓冲：
@@ -482,7 +482,9 @@ dated snapshot → process memory → live public scan + Gonka ranking
 session memory → 72-hour device buffer → Signals API
 ```
 
-设备缓冲最多保留 24 份日期主题简报，刚好对应三天 × 八个主题。它使用每份简报原始的 Gonka Request ID、来源与日期，超过 72 小时自动失效；缓冲未命中时才请求服务端。
+OSS 每个 UTC 日期只保存一个只读 JSON 对象，内部包含八个主题。服务端只读取最近三个 UTC 日期，并在返回任何主题前重新校验八份简报的日期、双语字段、公开来源、Gonka Request ID 和完成态 trace。对象缺失、超时或验证失败时会自动回退，不会把 OSS 可用性当成事实可靠性。
+
+设备缓冲最多保留 24 份日期主题简报，刚好对应三天 × 八个主题。它使用每份简报原始的 Gonka Request ID、来源与日期，超过 72 小时自动失效；设备缓冲未命中时才请求服务端。
 
 快照并不绕过推理。它保存的是某次已经完成的真实 Gonka 排序结果，包括：
 
@@ -493,7 +495,7 @@ session memory → 72-hour device buffer → Signals API
 
 编译器会拒绝缺少回执、来源 URL、双语字段、完成态 trace 或日期/主题不匹配的版次。
 
-当前仓库内置 `2026-07-15` UTC 版次，共八个主题、37 张双语候选卡。多日编译器可以一次校验并打包最近三天的 24 份真实版次；只有保留完整 Gonka 回执的日期目录才能进入预载层。首次获取一个主题后，前端会在后台预取同日其余七个主题，并写入三日设备缓冲。详见 [`docs/SIGNALS.md`](docs/SIGNALS.md)。
+当前仓库内置 `2026-07-15` UTC 版次，共八个主题、37 张双语候选卡。多日编译器可以一次校验最近三天的 24 份真实版次，再用 `npm run signals:oss -- --all OUTPUT_DIR` 生成每日 OSS 对象；只有保留完整 Gonka 回执的版次才能进入云端缓存。首次获取一个主题后，前端会在后台预取同日其余七个主题，并写入三日设备缓冲。详见 [`docs/SIGNALS.md`](docs/SIGNALS.md)。
 
 ## Atlas：私人知识库与空间组织层
 
@@ -599,6 +601,7 @@ cp .env.example .env.local
 ```dotenv
 GONKA_API_KEY=your_gonka_router_key
 MAPBOX_PUBLIC_TOKEN=pk.your_public_mapbox_token
+SIGNAL_CACHE_BASE_URL=https://last-night-on-earth.oss-cn-hangzhou.aliyuncs.com/fact-atlas/signals
 ```
 
 启动开发环境：
@@ -627,6 +630,7 @@ NODE_ENV=production HOST=127.0.0.1 PORT=5173 node server.mjs
 | `KIMI_MODEL` | 否 | `moonshotai/Kimi-K2.6` | Investigator / Vision 模型 |
 | `MINIMAX_MODEL` | 否 | `MiniMaxAI/MiniMax-M2.7` | Skeptic 模型 |
 | `MAPBOX_PUBLIC_TOKEN` | Atlas 底图需要 | — | 只接受浏览器安全的 `pk.` token |
+| `SIGNAL_CACHE_BASE_URL` | 否 | — | 最近三天的只读 Signals OSS JSON 根路径；未配置时使用内置快照与 live 路径 |
 | `HOST` | 否 | `0.0.0.0` | Node 服务监听地址 |
 | `PORT` | 否 | `5173` | Node 服务端口 |
 
@@ -671,6 +675,7 @@ npm audit --audit-level=low
 │   ├── scoring.mjs                 # 确定性 Truth Score
 │   ├── signals.mjs                 # Signals live 版次
 │   ├── signal-skills.mjs           # 日期窗口、规范化、去重等 Skills
+│   ├── signal-object-cache.mjs      # OSS 三日公开版次读取与完整回执校验
 │   ├── signal-snapshot.mjs         # 可复现日期快照
 │   ├── geocode.mjs                 # Nominatim 地点候选
 │   └── *.test.mjs                  # 核心服务测试

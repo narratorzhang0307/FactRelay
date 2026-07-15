@@ -2,7 +2,7 @@
 
 ## Health model
 
-`GET /api/health` is the primary readiness endpoint. It reports configured model IDs and whether the server has the credentials required for live inference. It never returns credential values.
+`GET /api/health` is the primary readiness endpoint. It reports configured model IDs, whether live inference is ready, and whether the public Signals object-cache root is configured. It never returns credential values or the cache URL.
 
 ```bash
 curl -fsS http://127.0.0.1:3013/api/health
@@ -41,7 +41,7 @@ Before sharing logs, remove user-submitted claims, remote page excerpts, request
 | Root loads but verification fails | Gonka credential, provider, or evidence retrieval | PM2 log plus structured API error code |
 | Atlas has no basemap | Mapbox public token or Mapbox network access | `/api/map-config` and browser console |
 | Installed app shows old shell | Service-worker update lifecycle | manifest/SW cache headers and cache version |
-| Signals is empty | Snapshot miss, date window, RSS availability, or Gonka ranking | `cacheLayer`, `/api/signals?...` response, and trace |
+| Signals is empty | OSS miss/invalid object, embedded snapshot miss, date window, RSS availability, or Gonka ranking | `cacheLayer`, `/api/signals?...` response, and trace |
 
 ## Security-sensitive incidents
 
@@ -57,7 +57,7 @@ Never place a replacement key in an issue, commit, screenshot, shell transcript,
 
 ## Availability boundary
 
-The PWA shell can open offline. A dated Signals snapshot can be served without new retrieval or inference once the app reaches the server, while uncached dates, verification, geocoding, and Mapbox configuration still require current upstream access. Snapshot cards visibly retain their edition date and are never relabeled as current evidence.
+The PWA shell can open offline. A dated Signals edition may come from the three-day OSS layer, the embedded snapshot, or the 72-hour device buffer without new inference. Uncached dates, verification, geocoding, and Mapbox configuration still require current upstream access. Cached cards visibly retain their edition date and original Gonka receipt and are never relabeled as current evidence.
 
 ## Regression check for a shared host
 
