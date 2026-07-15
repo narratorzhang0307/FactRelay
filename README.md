@@ -1,12 +1,25 @@
-# FactRelay
+# Fact Atlas · 知识星球
 
-**Traceable multi-model fact checking, powered by GonkaRouter.**
+**A verifiable personal knowledge map, powered by FactRelay and GonkaRouter.**
+**一张会先核验、再落位的个人知识地图。**
 
-FactRelay checks public claims without asking users to trust one opaque model. It retrieves current public evidence, gives two Gonka models opposing responsibilities, computes a deterministic Truth Score, and exposes the upstream request ID for every AI inference.
+Fact Atlas turns the things people read, save, and remember into a spatial knowledge lineage whose evidence can still be inspected later. Before a claim can enter the Atlas, the FactRelay engine retrieves public evidence, assigns opposing responsibilities to two Gonka models, computes a deterministic Truth Score, and preserves every upstream inference receipt. A human confirms the final placement; the product never invents coordinates.
+
+Fact Atlas 把人们读到、收藏和记住的内容，变成一条日后仍能复核证据的空间知识谱系。一条主张进入知识星球之前，FactRelay 会先检索公开证据，让两个 Gonka 模型分别承担调查与质疑职责，用确定性代码计算 Truth Score，并保留上游推理回执。最终地点由用户确认，系统不伪造坐标。
 
 > AI³ Growth Hackathon 2026 · Track 3: Gonka — AI for Society
 
 [Public demo / 在线演示](https://factrelay-ai3-2026.yediqizhang37.chatgpt.site) · [2:30 bilingual demo / 双语演示视频](https://github.com/narratorzhang0307/FactRelay/releases/tag/ai3-2026-submission) · [English details](#why-it-exists) · [架构边界](docs/ARCHITECTURE.md) · [提交材料](docs/SUBMISSION.md)
+
+## Product model / 产品结构
+
+| Layer / 层 | Responsibility / 职责 |
+| --- | --- |
+| **FactRelay · 事实中继** | Retrieve evidence, run Gonka models, score, and preserve receipts. / 检索证据、运行 Gonka 模型、评分并保留回执。 |
+| **Evidence Council · 证据法庭** | Evidence clerk → Kimi investigator → MiniMax skeptic → human gate. / 记录与调查、质疑、人工确认的有边界程序。 |
+| **Fact Atlas · 知识星球** | Store the complete evidence snapshot and a user-confirmed place in a private browser-local map. / 把完整证据快照与用户确认的地点保存进私人知识地图。 |
+
+The three responsive views use one visual language on desktop and mobile. The project deliberately removes Pocket Earth's photos, music, books, lifestyle collections, and oversized agent gallery; only the useful world/knowledge-map interaction model remains.
 
 ## Live proof / 实时运行证明
 
@@ -23,7 +36,7 @@ The production deployment is connected to GonkaRouter. A final public smoke run 
 
 ## 中文说明
 
-**FactRelay 是一个可追溯的多模型事实核查工作台。**
+**Fact Atlas 是一个由 FactRelay 驱动的可验证个人知识地图。**
 
 它不要求用户相信某一个模型生成的自信结论，而是将一条公开主张拆成一次可审查的调查：
 
@@ -41,7 +54,7 @@ The production deployment is connected to GonkaRouter. A final public smoke run 
 - 两个模型是独立达成共识，还是只在复述对方？
 - 评审能否证明这些分析来自哪几次真实推理请求？
 
-FactRelay 把这三个问题直接做成界面。
+FactRelay 把这三个问题直接做成界面；Fact Atlas 则把核验后的知识变成可持续积累的个人知识谱系。
 
 ### 核心能力
 
@@ -51,6 +64,8 @@ FactRelay 把这三个问题直接做成界面。
 - **确定性评分：** Truth Score 由模型结论、证据立场、来源覆盖与分歧程度共同计算，不由模型随口生成。
 - **真实推理回执：** 界面原样展示 GonkaRouter 响应中的 `id`。
 - **诚实预览模式：** 没有密钥时仍可查看完整界面，但不伪造 Request ID。
+- **可验证知识星球：** 保存完整核验快照；地点必须由用户确认，否则保留在“未落位轨道”。
+- **可解释关系：** 只因共享的精确来源或 300 公里内的已确认地理关系连线，不用随机距离伪造“知识关联”。
 
 ### Gonka 集成
 
@@ -183,7 +198,7 @@ npm run verify
 npm audit --audit-level=low
 ```
 
-`npm run verify` runs strict TypeScript checking, **19 unit tests across 5 files**, and the production build. `npm audit --audit-level=low` currently reports zero known vulnerabilities.
+`npm run verify` runs strict TypeScript checking, **27 unit tests across 7 files**, and the production build. `npm audit --audit-level=low` currently reports zero known vulnerabilities.
 
 ## API
 
@@ -191,6 +206,7 @@ npm audit --audit-level=low
 | --- | --- | --- |
 | `GET` | `/api/health` | Readiness and configured model IDs; never returns the key |
 | `GET` | `/api/demo` | Clearly labeled non-live preview fixture |
+| `GET` | `/api/geocode?q=...` | Non-AI place candidates for explicit user confirmation |
 | `POST` | `/api/verify` | Run the complete verification pipeline |
 
 Example request:
@@ -214,6 +230,7 @@ Example request:
 ## Documentation
 
 - [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — implementation and trust boundaries
+- [`docs/FACT_ATLAS.md`](docs/FACT_ATLAS.md) — Atlas data, placement, and Pocket Earth reuse boundary
 - [`docs/SUBMISSION.md`](docs/SUBMISSION.md) — submission copy and video plan
 
 ## License

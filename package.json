@@ -3,7 +3,7 @@
   "private": false,
   "version": "0.1.0",
   "type": "module",
-  "description": "Traceable multi-model fact checking powered by GonkaRouter.",
+  "description": "Fact Atlas is a verifiable personal knowledge map powered by FactRelay and GonkaRouter.",
   "scripts": {
     "dev": "node server.mjs",
     "prebuild": "node scripts/clean-dist.mjs",
