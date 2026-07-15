@@ -31,9 +31,11 @@ Target / 目标：AI³ Growth Hackathon 2026 · Track 3 — Gonka: AI for Societ
 ## Production / 生产部署
 
 - [x] Public demo returns HTTP 200 and `/api/health` reports `liveReady: true`.
-- [x] Public smoke run: live mode, Refuted, Truth Score 18, confidence 88%, 5 sources.
+- [x] Public smoke run: live mode, Refuted, Truth Score 18, confidence 93%, 5 sources.
 - [x] Both model cards contain non-null Gonka Request IDs.
-- [x] Public page browser console contains no errors.
+- [x] Public Signals run returned five current AI candidates with a real Gonka scout receipt.
+- [x] Public Mapbox configuration is enabled with the dark-v11 style; the public token is delivered only through the server route.
+- [x] Public page browser console contains no errors or warnings.
 - [x] Desktop layout, card arrows, keyboard navigation, mobile three-tab navigation, and touch-friendly Mapbox controls are present.
 - [x] Mobile Atlas has no horizontal overflow and the Mapbox canvas fills its 390px stage.
 
@@ -44,7 +46,10 @@ Target / 目标：AI³ Growth Hackathon 2026 · Track 3 — Gonka: AI for Societ
 - [x] Chinese narration and burned-in English subtitles.
 - [x] Real verdict, five sources, both models, and two real request IDs appear on screen.
 - [x] No API key, email, phone, password, or unrelated tab appears.
-- [x] Public release page and direct MP4 work without authentication.
+- [x] A separate 150-second clean picture master is included for the participant's own narration.
+- [x] Chinese, English, and bilingual SRT subtitle masters are included.
+- [x] Public GitHub release contains the Fact Atlas bilingual MP4, clean MP4, cover, and three subtitle files.
+- [x] Public release page and direct MP4 work without authentication; the direct MP4 returned an anonymous HTTP 206 range response.
 
 ## Remaining participant-only actions / 仅参赛者本人完成
 
