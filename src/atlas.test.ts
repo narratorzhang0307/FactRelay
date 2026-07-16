@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   ATLAS_STORAGE_KEY,
+  buildAtlasEditions,
   buildAtlasLinks,
   clearAtlas,
   greatCircleKm,
@@ -8,6 +9,7 @@ import {
   projectToGlobe,
   removeAtlasNode,
   saveAtlasNode,
+  savePublicAtlasNode,
   type AtlasPlacement,
 } from "./atlas";
 import type { VerificationResult } from "./types";
@@ -50,7 +52,18 @@ describe("Fact Atlas local model", () => {
     saveAtlasNode(result("fr_one"), beijing, storage, new Date("2026-07-15T01:00:00Z"));
     saveAtlasNode({ ...result("fr_one"), truthScore: 92 }, beijing, storage, new Date("2026-07-15T02:00:00Z"));
     expect(loadAtlasNodes(storage)).toHaveLength(1);
-    expect(loadAtlasNodes(storage)[0]).toMatchObject({ id: "fr_one", result: { truthScore: 92 }, placement: { confirmedByUser: true } });
+    expect(loadAtlasNodes(storage)[0]).toMatchObject({ id: "fr_one", visibility: "private", commitment: null, result: { truthScore: 92 }, placement: { confirmedByUser: true } });
+  });
+
+  it("publishes only live cases into deterministic daily editions", async () => {
+    const storage = new MemoryStorage();
+    const node = await savePublicAtlasNode(result("fr_public"), beijing, "Beijing hosted the event.", storage, new Date("2026-07-16T08:00:00Z"));
+    expect(node.visibility).toBe("public");
+    expect(node.commitment?.recordHash).toMatch(/^0x[0-9a-f]{64}$/);
+    const editions = await buildAtlasEditions(loadAtlasNodes(storage));
+    expect(editions).toHaveLength(1);
+    expect(editions[0]).toMatchObject({ date: "2026-07-16", factCount: 1 });
+    await expect(savePublicAtlasNode({ ...result("fr_preview"), mode: "preview" }, null, "A preview cannot be public.", storage)).rejects.toThrow("Only a live verification");
   });
 
   it("rejects invalid coordinates instead of inventing a map position", () => {

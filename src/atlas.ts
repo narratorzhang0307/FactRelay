@@ -1,6 +1,16 @@
 import type { VerificationResult, Verdict } from "./types";
+import {
+  buildDailyEditions,
+  buildFactCommitment,
+  type DailyKnowledgeEdition,
+  type EditionFact,
+  type FactCommitment,
+} from "./knowledge-chain";
 
 export const ATLAS_STORAGE_KEY = "factrelay.atlas.v1";
+export const CHRONICLE_ANCHOR_STORAGE_KEY = "factatlas.chronicle.anchors.v1";
+
+export type AtlasVisibility = "private" | "public";
 
 export interface AtlasPlacement {
   label: string;
@@ -15,6 +25,24 @@ export interface AtlasNode {
   savedAt: string;
   placement: AtlasPlacement | null;
   result: VerificationResult;
+  visibility: AtlasVisibility;
+  canonicalClaim: string;
+  commitment: FactCommitment | null;
+}
+
+export interface ChronicleAnchor {
+  editionRoot: string;
+  txHash: string;
+  chainName: string;
+  contractAddress: string;
+  publisher: string;
+  anchoredAt: string;
+}
+
+export interface AtlasNodeMetadata {
+  visibility?: AtlasVisibility;
+  canonicalClaim?: string;
+  commitment?: FactCommitment | null;
 }
 
 export interface AtlasLink {
@@ -88,22 +116,46 @@ function isVerificationResult(value: unknown): value is VerificationResult {
     && Boolean(result.scoring && typeof result.scoring === "object");
 }
 
-function isNode(value: unknown): value is AtlasNode {
+function isHash(value: unknown): value is string {
+  return typeof value === "string" && /^0x[0-9a-f]{64}$/i.test(value);
+}
+
+function isFactCommitment(value: unknown): value is FactCommitment {
   if (!value || typeof value !== "object") return false;
+  const commitment = value as Partial<FactCommitment>;
+  return commitment.schema === "fact-atlas-chronicle/v1"
+    && isHash(commitment.claimKey)
+    && isHash(commitment.rawSnapshotHash)
+    && isHash(commitment.evidenceRoot)
+    && isHash(commitment.receiptRoot)
+    && isHash(commitment.scorePolicyHash)
+    && isHash(commitment.recordHash);
+}
+
+function migrateNode(value: unknown): AtlasNode | null {
+  if (!value || typeof value !== "object") return null;
   const node = value as Partial<AtlasNode>;
-  return typeof node.id === "string"
+  const result = node.result;
+  const valid = typeof node.id === "string"
     && typeof node.savedAt === "string"
     && !Number.isNaN(Date.parse(node.savedAt))
     && (node.placement === null || isPlacement(node.placement))
-    && isVerificationResult(node.result)
-    && node.result.id === node.id;
+    && isVerificationResult(result)
+    && result.id === node.id;
+  if (!valid) return null;
+  const visibility = node.visibility === "public" ? "public" : "private";
+  const canonicalClaim = typeof node.canonicalClaim === "string" && node.canonicalClaim.trim()
+    ? node.canonicalClaim.trim()
+    : result!.claim;
+  const commitment = visibility === "public" && isFactCommitment(node.commitment) ? node.commitment : null;
+  return { ...node, visibility, canonicalClaim, commitment } as AtlasNode;
 }
 
 export function loadAtlasNodes(storage: StorageLike | null = browserStorage()): AtlasNode[] {
   if (!storage) return [];
   try {
     const parsed = JSON.parse(storage.getItem(ATLAS_STORAGE_KEY) || "[]") as unknown;
-    return Array.isArray(parsed) ? parsed.filter(isNode) : [];
+    return Array.isArray(parsed) ? parsed.map(migrateNode).filter((node): node is AtlasNode => Boolean(node)) : [];
   } catch {
     return [];
   }
@@ -125,6 +177,7 @@ export function saveAtlasNode(
   placement: AtlasPlacement | null,
   storage: StorageLike | null = browserStorage(),
   now = new Date(),
+  metadata: AtlasNodeMetadata = {},
 ): AtlasNode {
   if (placement && !isPlacement(placement)) throw new Error("Invalid Atlas placement.");
   if (!isVerificationResult(result)) throw new Error("Invalid verification result.");
@@ -133,12 +186,87 @@ export function saveAtlasNode(
     savedAt: now.toISOString(),
     placement,
     result,
+    visibility: metadata.visibility === "public" ? "public" : "private",
+    canonicalClaim: metadata.canonicalClaim?.trim() || result.claim,
+    commitment: metadata.visibility === "public" && metadata.commitment ? metadata.commitment : null,
   };
   const next = [node, ...loadAtlasNodes(storage).filter((existing) => existing.id !== node.id)];
   if (!persistAtlasNodes(next, storage)) {
     throw new Error("Atlas storage is unavailable. · 当前浏览器无法保存知识节点。");
   }
   return node;
+}
+
+export async function savePublicAtlasNode(
+  result: VerificationResult,
+  placement: AtlasPlacement | null,
+  canonicalClaim: string,
+  storage: StorageLike | null = browserStorage(),
+  now = new Date(),
+): Promise<AtlasNode> {
+  if (result.mode !== "live") {
+    throw new Error("Only a live verification can enter the public Chronicle. · 只有真实核验结果才能进入公共知识链。");
+  }
+  const normalizedClaim = canonicalClaim.trim();
+  if (normalizedClaim.length < 8) {
+    throw new Error("Confirm a complete canonical claim before publishing. · 发布前请确认一条完整的规范主张。");
+  }
+  const commitment = await buildFactCommitment(result, normalizedClaim, placement);
+  return saveAtlasNode(result, placement, storage, now, {
+    visibility: "public",
+    canonicalClaim: normalizedClaim,
+    commitment,
+  });
+}
+
+export function editionFactsFromNodes(nodes: AtlasNode[]): EditionFact[] {
+  return nodes
+    .filter((node) => node.visibility === "public" && node.commitment)
+    .map((node) => ({
+      id: node.id,
+      savedAt: node.savedAt,
+      claim: node.result.claim,
+      canonicalClaim: node.canonicalClaim,
+      verdict: node.result.verdict,
+      truthScore: node.result.truthScore,
+      commitment: node.commitment!,
+    }));
+}
+
+export function buildAtlasEditions(nodes: AtlasNode[]): Promise<DailyKnowledgeEdition[]> {
+  return buildDailyEditions(editionFactsFromNodes(nodes));
+}
+
+function isChronicleAnchor(value: unknown): value is ChronicleAnchor {
+  if (!value || typeof value !== "object") return false;
+  const anchor = value as Partial<ChronicleAnchor>;
+  return isHash(anchor.editionRoot)
+    && /^0x[0-9a-f]{64}$/i.test(String(anchor.txHash))
+    && typeof anchor.chainName === "string"
+    && /^0x[0-9a-f]{40}$/i.test(String(anchor.contractAddress))
+    && /^0x[0-9a-f]{40}$/i.test(String(anchor.publisher))
+    && typeof anchor.anchoredAt === "string"
+    && !Number.isNaN(Date.parse(anchor.anchoredAt));
+}
+
+export function loadChronicleAnchors(storage: StorageLike | null = browserStorage()): ChronicleAnchor[] {
+  if (!storage) return [];
+  try {
+    const parsed = JSON.parse(storage.getItem(CHRONICLE_ANCHOR_STORAGE_KEY) || "[]") as unknown;
+    return Array.isArray(parsed) ? parsed.filter(isChronicleAnchor) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function saveChronicleAnchor(anchor: ChronicleAnchor, storage: StorageLike | null = browserStorage()): void {
+  if (!isChronicleAnchor(anchor) || !storage) throw new Error("Invalid Chronicle anchor. · 知识链锚点无效。");
+  const next = [anchor, ...loadChronicleAnchors(storage).filter((item) => item.editionRoot !== anchor.editionRoot)];
+  try {
+    storage.setItem(CHRONICLE_ANCHOR_STORAGE_KEY, JSON.stringify(next));
+  } catch {
+    throw new Error("Chronicle anchor storage is unavailable. · 当前浏览器无法保存链上锚点。");
+  }
 }
 
 export function removeAtlasNode(id: string, storage: StorageLike | null = browserStorage()): void {
