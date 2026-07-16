@@ -18,6 +18,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "contract:compile": "solcjs --bin --abi contracts/FactAtlasChronicle.sol -o tmp/contracts",
+    "contract:deploy:base-sepolia": "node scripts/deploy-chronicle.mjs",
     "verify": "npm run typecheck && npm run test && npm run contract:compile && npm run build"
   },
   "engines": {

@@ -7,6 +7,8 @@ const CHRONICLE_ABI = [
 export interface ChronicleConfiguration {
   contractAddress: string;
   chainName: string;
+  chainId: number;
+  rpcUrl: string;
   explorerUrl: string;
   ready: boolean;
 }
@@ -25,11 +27,15 @@ function configuredAddress(): string {
 
 export function getChronicleConfiguration(): ChronicleConfiguration {
   const contractAddress = configuredAddress();
+  const chainId = Number(import.meta.env.VITE_FACT_ATLAS_CHAIN_ID || 84532);
+  const rpcUrl = String(import.meta.env.VITE_FACT_ATLAS_RPC_URL || "https://sepolia.base.org").trim();
   return {
     contractAddress,
     chainName: String(import.meta.env.VITE_FACT_ATLAS_CHAIN_NAME || "EVM network").trim(),
+    chainId,
+    rpcUrl,
     explorerUrl: String(import.meta.env.VITE_FACT_ATLAS_EXPLORER_URL || "").trim().replace(/\/$/, ""),
-    ready: /^0x[0-9a-f]{40}$/i.test(contractAddress),
+    ready: /^0x[0-9a-f]{40}$/i.test(contractAddress) && Number.isInteger(chainId) && chainId > 0 && /^https:\/\//.test(rpcUrl),
   };
 }
 
@@ -42,11 +48,33 @@ export async function commitDailyEdition(edition: DailyKnowledgeEdition): Promis
   if (!config.ready) {
     throw new Error("Chronicle contract address is not configured. · 公共知识链合约地址尚未配置。");
   }
-  const ethereum = (window as Window & { ethereum?: unknown }).ethereum;
+  const ethereum = (window as Window & { ethereum?: {
+    request(args: { method: string; params?: unknown[] }): Promise<unknown>;
+  } }).ethereum;
   if (!ethereum) throw new Error("Install or open an EVM wallet first. · 请先安装或打开 EVM 钱包。");
   const { BrowserProvider, Contract, getAddress } = await import("ethers");
   const contractAddress = getAddress(config.contractAddress);
-  const provider = new BrowserProvider(ethereum as never);
+  const expectedChainId = `0x${config.chainId.toString(16)}`;
+  const currentChainId = await ethereum.request({ method: "eth_chainId" });
+  if (currentChainId !== expectedChainId) {
+    try {
+      await ethereum.request({ method: "wallet_switchEthereumChain", params: [{ chainId: expectedChainId }] });
+    } catch (error) {
+      const code = Number((error as { code?: unknown })?.code);
+      if (code !== 4902) throw error;
+      await ethereum.request({
+        method: "wallet_addEthereumChain",
+        params: [{
+          chainId: expectedChainId,
+          chainName: config.chainName,
+          nativeCurrency: { name: "Ethereum", symbol: "ETH", decimals: 18 },
+          rpcUrls: [config.rpcUrl],
+          blockExplorerUrls: config.explorerUrl ? [config.explorerUrl] : [],
+        }],
+      });
+    }
+  }
+  const provider = new BrowserProvider(ethereum);
   await provider.send("eth_requestAccounts", []);
   const signer = await provider.getSigner();
   const account = await signer.getAddress();

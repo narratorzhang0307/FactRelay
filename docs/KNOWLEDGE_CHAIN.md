@@ -172,7 +172,20 @@ npm run build
 ```bash
 VITE_FACT_ATLAS_CONTRACT_ADDRESS=0x...
 VITE_FACT_ATLAS_CHAIN_NAME=Base Sepolia
-VITE_FACT_ATLAS_EXPLORER_URL=https://sepolia.basescan.org
+VITE_FACT_ATLAS_CHAIN_ID=84532
+VITE_FACT_ATLAS_RPC_URL=https://sepolia.base.org
+VITE_FACT_ATLAS_EXPLORER_URL=https://sepolia-explorer.base.org
 ```
+
+Base Sepolia 部署命令：
+
+```bash
+read -s FACT_ATLAS_DEPLOYER_PRIVATE_KEY
+export FACT_ATLAS_DEPLOYER_PRIVATE_KEY
+npm run contract:deploy:base-sepolia
+unset FACT_ATLAS_DEPLOYER_PRIVATE_KEY
+```
+
+部署脚本会在发送交易前核对 chain ID 必须为 `84532`，并拒绝余额为零的钱包。私钥只从当前进程环境读取，绝不能写入 `.env.local`、源码、日志或 Git。
 
 缺少合约地址时，产品仍能生成、展示和导出本地 Merkle proof bundle，但不会伪装成已经上链。
