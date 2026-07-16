@@ -23,6 +23,20 @@
   <a href="docs/SIGNALS.md">Signals 版次</a>
 </p>
 
+## 项目快速入口 / Project Overview
+
+> **3 分钟看懂产品、Gonka 接入与知识 DApp：**
+> [技术概览（Markdown）](docs/PROJECT_OVERVIEW.md)
+> · [作品介绍与技术说明（Word）](docs/FactAtlas_作品介绍与技术说明_DApp深化版.docx)
+> · [每日知识链协议](docs/KNOWLEDGE_CHAIN.md)
+> · [智能合约源码](contracts/FactAtlasChronicle.sol)
+
+- **产品闭环**：Signals 发现候选知识，Relay 检索证据并完成双模型对抗核验，Atlas 保存经用户确认的私人知识节点与公共 Daily Edition。
+- **Gonka 推理边界**：Kimi-K2.6 与 MiniMax-M2.7 的语义推理统一经过 GonkaRouter；上游 Request ID、模型、阶段、耗时和执行顺序进入回执。
+- **知识 DApp**：公开事实按 UTC 日期生成 Merkle Edition，以 `previousEditionRoot` 连接历史版本；EVM 合约保存紧凑完整性承诺、发布者、修订号和区块时间。
+- **可验证边界**：链上记录用于验证发布历史、版本顺序和内容完整性；事实结论继续由公开证据、模型分歧与确定性评分共同支撑。
+- **当前状态**：合约、Merkle Proof、钱包接入和 Base Sepolia 部署脚本已经实现；公开构建未配置测试链合约地址，因此界面明确显示 `Contract-ready`，不会伪造交易成功状态。
+
 ---
 
 ## 一句话定位
